@@ -5,6 +5,8 @@
   "main": "temp.js",
   "dependencies": {
     "ds18x20": "^0.2.0",
+    "minimist": "^1.2.0",
+    "q": "^1.4.1",
     "underscore": "^1.8.3"
   },
   "devDependencies": {},
