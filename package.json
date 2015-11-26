@@ -1,0 +1,20 @@
+{
+  "name": "house-monitor",
+  "version": "0.0.1",
+  "description": "Using node.js on raspberry pi to build a simple camera and temperature monitor for home",
+  "main": "temp.js",
+  "dependencies": {
+    "ds18x20": "^0.2.0",
+    "underscore": "^1.8.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "raspberry",
+    "pi"
+  ],
+  "author": "Christian Parker (cp@cjparker.us)",
+  "license": "MIT"
+}
