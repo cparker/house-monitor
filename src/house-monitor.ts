@@ -10,10 +10,28 @@ import {ComponentMetadata as Component, ViewMetadata as View, CORE_DIRECTIVES} f
 })
 
 export class HouseMonitor {
-  foo:String;
+  tempF:Number;
+  motionEvents:Array;
 
   constructor() {
     console.info('HouseMonitor Component Mounted Successfully');
-    this.foo = 'OK';
+    this.tempF= 68.3;
+    this.motionEvents = [
+      {
+        date: new Date(),
+        thumb: 'images/sampleEventThumb.jpg',
+        fullUrl: 'images/sampleEventFull.jpg'
+      },
+      {
+        date: new Date(),
+        thumb: 'images/sampleEventThumb.jpg',
+        fullUrl: 'images/sampleEventFull.jpg'
+      },
+      {
+        date: new Date(),
+        thumb: 'images/sampleEventThumb.jpg',
+        fullUrl: 'images/sampleEventFull.jpg'
+      }
+    ]
   }
 }

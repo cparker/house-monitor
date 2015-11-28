@@ -1,2 +1,7 @@
-<h1>this is house monitor</h1>
-condition : {{foo}}
+<div>Current Temp: {{tempF}} ºF</div>
+
+<div>Recent motion events</div>
+<div *ng-for="#event of motionEvents">
+  {{event.date | date:'medium'}}
+  <div><img src="{{event.thumb}}"/></div>
+</div>

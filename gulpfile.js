@@ -6,7 +6,7 @@ var gulp = require('gulp'),
   sass = require('gulp-sass');
 
 // run init tasks
-gulp.task('default', ['dependencies', 'js', 'html', 'css']);
+gulp.task('default', ['dependencies', 'js', 'html', 'images', 'sass']);
 
 // run development task
 gulp.task('dev', ['default', 'watch', 'serve']);
@@ -16,7 +16,7 @@ gulp.task('serve', function () {
   gulp.src('build')
     .pipe(webserver({
       open: true,
-      livereload:true
+      livereload: true
     }));
 });
 
@@ -40,7 +40,7 @@ gulp.task('dependencies', function () {
     .pipe(gulp.dest('build/lib'));
 });
 
-gulp.task('sass', function() {
+gulp.task('sass', function () {
   return gulp.src('src/sass/**/*.scss')
     .pipe(debug())
     .pipe(sass().on('error', sass.logError))
@@ -49,7 +49,7 @@ gulp.task('sass', function() {
 
 // transpile & move js
 gulp.task('js', function () {
-  return gulp.src(['src/**/*.ts','src/**/*.js'])
+  return gulp.src(['src/**/*.ts', 'src/**/*.js'])
     .pipe(debug())
     .pipe(rename({
       extname: ''
@@ -73,8 +73,9 @@ gulp.task('html', function () {
     .pipe(gulp.dest('build'))
 });
 
-// move css
-gulp.task('css', function () {
-  return gulp.src('src/**/*.css')
-    .pipe(gulp.dest('build'))
+// move images
+gulp.task('images', function () {
+  return gulp.src('src/images/**/*.jpg')
+    .pipe(gulp.dest('build/images'))
 });
+
