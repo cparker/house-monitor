@@ -4,3 +4,4 @@ build/
 .DS_Store
 new-vids/
 live-vids/
+recordTemp.log
