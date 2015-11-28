@@ -1,22 +1,28 @@
 {
   "name": "house-monitor",
   "version": "0.0.1",
-  "description": "Using node.js on raspberry pi to build a simple camera and temperature monitor for home",
-  "main": "temp.js",
+  "scripts": {
+    "build": "gulp",
+    "start": "gulp dev"
+  },
   "dependencies": {
+    "angular2": "2.0.0-alpha.46",
+    "reflect-metadata": "0.1.1",
+    "systemjs": "0.18.17",
+    "traceur": "0.0.92",
     "ds18x20": "^0.2.0",
     "minimist": "^1.2.0",
     "q": "^1.4.1",
     "underscore": "^1.8.3"
   },
-  "devDependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "devDependencies": {
+    "gulp": "3.9.0",
+    "gulp-debug": "^2.1.2",
+    "gulp-rename": "1.2.2",
+    "gulp-sass": "^2.1.0",
+    "gulp-traceur": "0.17.1",
+    "gulp-webserver": "0.9.1"
   },
-  "keywords": [
-    "raspberry",
-    "pi"
-  ],
   "author": "Christian Parker (cp@cjparker.us)",
   "license": "MIT"
 }
