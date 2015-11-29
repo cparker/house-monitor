@@ -5,3 +5,4 @@ build/
 new-vids/
 live-vids/
 lastCheck.json
+recordTemp.log

@@ -41,6 +41,7 @@ module.exports = (function () {
               sys.puts(stderr);
 
               // remove the old vid
+              console.log('deleting ', appDir + newVidsDir + '/' + vid)
               unlink(appDir + newVidsDir + '/' + vid);
             });
           } catch (err) {
