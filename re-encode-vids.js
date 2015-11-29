@@ -4,7 +4,7 @@
 
 var fs = require('fs');
 var Q = require('q');
-var sys = require('sys')
+var sys = require('sys');
 var exec = require('child_process').exec;
 var _ = require('underscore');
 
