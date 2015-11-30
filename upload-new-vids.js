@@ -7,18 +7,22 @@ var Q = require('q');
 var sys = require('sys');
 var exec = require('child_process').exec;
 var _ = require('underscore');
+var argv = require('minimist')(process.argv.slice(2));
 
 module.exports = (function () {
 
   var readdir = Q.nfbind(fs.readdir);
 
-  //var motionContentDir = '/media/iomega/motion';
-  var motionContentDir = '/media/iomega/motion';
+  var motionContentDir = argv.motionContentDir || '/media/iomega/motion';
+  var lastCheckDir = argv.lastCheckDir || '/bigopt/house-monitor';
   var lastCheckFile = 'lastCheck.json';
-  var ec2key = '/media/iomega/bigopt/house-monitor/ec2-march-2014.pem';
-  var ec2UserAndHost = 'ubuntu@cjparker.us';
-  var movieUploadLocation = '/opt/house-monitor/new-vids/';
-  var picUploadLocation = '/opt/house-monitor/live-vids/';
+  var ec2key = argv.ec2key || '/bigopt/house-monitor/ec2-march-2014.pem';
+  var ec2UserAndHost = argv.ec2UserAndHost || 'ubuntu@cjparker.us';
+  var movieUploadLocation = argv.movieUploadLocation || '/opt/house-monitor/new-vids/';
+  var picUploadLocation = argv.picUploadLocation || '/opt/house-monitor/live-vids/';
+  var tempsDir = argv.tempsDir || '/bigopt/house-monitor';
+  var tempsFilename = 'temps.json';
+  var tempUploadLocation = argv.tempUploadLocation || '/opt/house-monitor';
 
   readdir(motionContentDir)
     .then(function (motionFiles) {
@@ -26,7 +30,7 @@ module.exports = (function () {
       var lastCheck;
 
       try {
-        var lastCheckJSON = JSON.parse(fs.readFileSync(lastCheckFile, {encoding: 'utf-8'}));
+        var lastCheckJSON = JSON.parse(fs.readFileSync(lastCheckDir + '/' + lastCheckFile, {encoding: 'utf-8'}));
         lastCheck = {
           date: new Date(lastCheckJSON.date)
         }
@@ -63,6 +67,13 @@ module.exports = (function () {
         .replace('$1', ec2key)
         .replace('$3', ec2UserAndHost)
         .replace('$4', picUploadLocation);
+
+      // uploads temps.json file to cloud
+      var tempUploadCommand = '/usr/bin/scp -p -i $1 $2 $3:$4'
+        .replace('$1', ec2key)
+        .replace('$2', tempsDir + '/' + tempsFilename)
+        .replace('$3', ec2UserAndHost)
+        .replace('$4', tempUploadLocation);
 
       var movies = _.filter(newFiles, function (f) {
         return f.name.match('.avi' + '$') == '.avi';
@@ -106,7 +117,21 @@ module.exports = (function () {
         }
       });
 
-      fs.writeFileSync(lastCheckFile, JSON.stringify({date: new Date()}));
+      // TEMP
+      try {
+        exec(tempUploadCommand, function (err, stdout, stderr) {
+          if (err) {
+            console.log(err);
+          }
+          sys.puts(stdout);
+          sys.puts(stderr);
+        });
+
+      } catch (err) {
+        console.log('caught error uploading temps', err);
+      }
+
+      fs.writeFileSync(lastCheckDir + '/' + lastCheckFile, JSON.stringify({date: new Date()}));
     })
     .catch(function (err) {
       console.log('caught ', err);

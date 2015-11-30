@@ -1,7 +1,7 @@
 <div>Current Temp: {{tempF}} ºF</div>
 
 <div>Recent motion events</div>
-<div *ng-for="#event of motionEvents">
+<div *ng-for="#event of events">
   {{event.date | date:'medium'}}
-  <div><img src="{{event.thumb}}"/></div>
+  <div><img src="{{event.pic}}"/></div>
 </div>
