@@ -57,51 +57,59 @@ module.exports = (function () {
       var movieUploadCommand = '/usr/bin/scp -p -i $1 $2 $3:$4'
         .replace('$1', ec2key)
         .replace('$3', ec2UserAndHost)
-        .replace('$4', movieUploadLocation)
+        .replace('$4', movieUploadLocation);
 
       var picUploadCommand = '/usr/bin/scp -p -i $1 $2 $3:$4'
         .replace('$1', ec2key)
         .replace('$3', ec2UserAndHost)
-        .replace('$4', picUploadLocation)
+        .replace('$4', picUploadLocation);
 
-      var movies = _.filter(newFiles, function(f) {
-        return f.name.match('.avi'+'$')=='.avi';
-      })
+      var movies = _.filter(newFiles, function (f) {
+        return f.name.match('.avi' + '$') == '.avi';
+      });
 
-      var pics = _.filter(newFiles, function(f) {
-        return f.name.match('.jpg'+'$')=='.jpg';
-      })
+      var pics = _.filter(newFiles, function (f) {
+        return f.name.match('.jpg' + '$') == '.jpg';
+      });
 
       // MOVIES
       _.each(movies, function (fileToUpload) {
-        console.log('running ', movieUploadCommand.replace('$2',fileToUpload.name))
-        exec(movieUploadCommand.replace('$2',fileToUpload.name), function(err,stdout,stderr) {
-          if (err) {
-            console.log(err);
-          }
-          sys.puts(stdout);
-          sys.puts(stderr);
+        try {
+          console.log('running ', movieUploadCommand.replace('$2', fileToUpload.name));
+          exec(movieUploadCommand.replace('$2', fileToUpload.name), function (err, stdout, stderr) {
+            if (err) {
+              console.log(err);
+            }
+            sys.puts(stdout);
+            sys.puts(stderr);
 
-        });
+          });
+        } catch (err) {
+          console.log('caught ', err, ' skipping file');
+        }
       });
 
       // PICS
       _.each(pics, function (fileToUpload) {
-        console.log('running ', picUploadCommand.replace('$2',fileToUpload.name))
-        exec(picUploadCommand.replace('$2',fileToUpload.name), function(err,stdout,stderr) {
-          if (err) {
-            console.log(err);
-          }
-          sys.puts(stdout);
-          sys.puts(stderr);
+        try {
+          console.log('running ', picUploadCommand.replace('$2', fileToUpload.name));
+          exec(picUploadCommand.replace('$2', fileToUpload.name), function (err, stdout, stderr) {
+            if (err) {
+              console.log(err);
+            }
+            sys.puts(stdout);
+            sys.puts(stderr);
 
-        });
+          });
+        } catch (err) {
+          console.log('caught ', err, ' skipping file');
+        }
       });
 
       fs.writeFileSync(lastCheckFile, JSON.stringify({date: new Date()}));
     })
     .catch(function (err) {
-      console.log('caught ',err);
+      console.log('caught ', err);
     })
 
 })();
