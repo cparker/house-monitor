@@ -31,7 +31,7 @@ module.exports = (function () {
     .then(function (tempF) {
       var temp = {
         date: new Date(),
-        temp: tempF
+        tempF: tempF
       };
       temps.all.push(temp);
       temps.latest = temp;

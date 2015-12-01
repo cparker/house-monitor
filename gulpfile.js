@@ -36,7 +36,10 @@ gulp.task('dependencies', function () {
     'node_modules/systemjs/dist/system-csp-production.src.js',
     'node_modules/systemjs/dist/system.js',
     'node_modules/reflect-metadata/Reflect.js',
-    'node_modules/angular2/bundles/angular2.js'
+    'node_modules/angular2/bundles/angular2.js',
+    'node_modules/angular2/bundles/http.dev.js',
+    'node_modules/moment/moment.js',
+    'node_modules/underscore/underscore.js'
   ])
     .pipe(gulp.dest('build/lib'));
 });
@@ -60,7 +63,9 @@ gulp.task('js', function () {
       moduleName: true,
       annotations: true,
       types: true,
-      memberVariables: true
+      memberVariables: true,
+      arrowFunctions: true,
+      require : true
     }))
     .pipe(rename({
       extname: '.js'
@@ -76,7 +81,7 @@ gulp.task('html', function () {
 
 // move images
 gulp.task('images', function () {
-  return gulp.src('src/images/**/*.jpg')
+  return gulp.src('src/images/**/*.{jpg,png,gif,ico,avi,mp4}')
     .pipe(gulp.dest('build/images'))
 });
 

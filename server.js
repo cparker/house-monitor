@@ -11,7 +11,9 @@ var argv = require('minimist')(process.argv.slice(2));
 
 module.exports = (function () {
   var port = argv.port || 3000;
-  var motionContentDir = 'mock-motion-content';
+  var motionContentDir = argv.motionContentDir || 'build/images';
+  var imageURLPrefix = argv.imageURLPrefix || 'images/';
+  var mockTemp = argv.mockTemp;
 
   /*
    [
@@ -41,7 +43,7 @@ module.exports = (function () {
       var stat = fs.fstatSync(fd);
       fs.closeSync(fd);
       return {
-        name: motionContentDir + '/' + f,
+        name: imageURLPrefix + f,
         stat: stat
       }
     });
@@ -92,16 +94,39 @@ module.exports = (function () {
       .value()
       .reverse();
 
+    console.log('returning', pairs);
+
     res.json(pairs);
   };
 
 
   var handleTemp = function (req, res) {
 
+    var mockResponse =
+    {
+      "all": [
+        {
+          "date": "2015-11-30T19:08:52.335Z",
+          "tempF": 45.1
+        },
+        {
+          "date": "2015-11-30T19:09:08.779Z",
+          "tempF": 45.1
+        }
+      ],
+      "latest": {
+        "date": "2015-11-30T19:09:49.947Z",
+        "tempF": 45.1
+      }
+    };
+
+    return res.json(mockResponse);
+
   };
 
   var app = express();
   app.use(morgan('combined'));
+  app.use(express.static('build'));
 
   app.get('/motion', handleMotion);
   app.get('/temp', handleTemp);

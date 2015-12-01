@@ -1,7 +1,6 @@
-<div>Current Temp: {{tempF}} ºF</div>
+<div class="temp"><span class="tempValue">{{temp.latest.tempF || 0}} ºF</span> @ {{temp.latest.date | date:'MMM d h:mm Z'}}</div>
 
-<div>Recent motion events</div>
-<div *ng-for="#event of events">
-  {{event.date | date:'medium'}}
-  <div><img src="{{event.pic}}"/></div>
+<div *ng-for="#event of events" class="pic">
+  {{event.eventDate | date:'MMM d h:mm Z'}}
+  <div><a href="{{event.vid}}"><img src="{{event.pic}}"/></a></div>
 </div>
