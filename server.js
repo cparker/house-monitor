@@ -52,6 +52,7 @@ module.exports = (function () {
       }
     });
 
+
     var newFiles = _.filter(fileStats, function (fs) {
       return fs.stat.mtime >= cutoffDate;
     });
@@ -66,10 +67,9 @@ module.exports = (function () {
     var pairs = _.chain(vids)
       .map(function (vid) {
         var noExtention = vid.name.substr(0, vid.name.lastIndexOf('.'));
-        var picFilename = noExtention + '-00.jpg';
+        var picFilename = noExtention + '.jpg';
         // confirm that we have the still
         var hasPic = _.find(newFiles, function (fs) {
-          console.log('fs.name',fs.name,'picFilename',picFilename);
           return fs.name == picFilename;
         });
 
