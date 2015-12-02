@@ -18,11 +18,11 @@ module.exports = (function () {
   var execPromise = Q.denodeify(exec);
 
   // look for new vids uploaded
-  var vids = fs.readdirSync(appDir + newidsDir);
+  var vids = fs.readdirSync(appDir + newVidsDir);
   console.log('', vids.length, 'new videos to re-encode');
   console.log('vids', vids);
 
-  var encodeCommand = 'avconv -i $1 -vcodec libx264 -vprofile high -preset slow -b:v 1000k -maxrate 1000k -bufsize 200k -r 4 $2';
+  var encodeCommand = 'avconv -y -i $1 -vcodec libx264 -vprofile high -preset slow -b:v 1000k -maxrate 1000k -bufsize 200k -r 4 $2';
 
   var commandPromises = _.map(vids, function (vid) {
 
@@ -36,9 +36,12 @@ module.exports = (function () {
         .then(function (res) {
           sys.puts(res[0]);
           sys.puts(res[1]);
+          console.log('deleting source file');
           unlink(appDir + newVidsDir + '/' + vid);
         }).catch(function (err) {
-          sys.puts(err);
+          console.log(err);
+          console.log('deleting source file');
+          unlink(appDir + newVidsDir + '/' + vid);
         })
     };
   });
