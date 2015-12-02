@@ -1,6 +1,8 @@
 <div class="temp"><span class="tempValue">{{temp.latest.tempF || 0}} ºF</span> @ {{temp.latest.dateStr}}</div>
 
-<div *ng-for="#event of events" class="pic">
-  {{event.eventDateStr}}
-  <div><a href="{{event.vid}}"><img src="{{event.pic}}"/></a></div>
+<div class="pic-container">
+  <div *ng-for="#event of events" class="pic">
+    {{event.eventDateStr}}
+    <a href="{{event.vid}}"><div class="pic-inner"><img src="{{event.pic}}"/></div></a>
+  </div>
 </div>

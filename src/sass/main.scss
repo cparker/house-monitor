@@ -18,3 +18,16 @@ main {
 .pic {
   padding-bottom: 0.8em;
 }
+
+.pic-inner {
+
+  img {
+    max-width:350px;
+    max-height:350px;
+  }
+}
+
+.pic-container {
+  height:100%;
+  overflow: scroll;
+}
