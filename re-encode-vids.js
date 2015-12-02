@@ -17,41 +17,53 @@ module.exports = (function () {
   var readdir = Q.nfbind(fs.readdir);
   var unlink = Q.nfbind(fs.unlink);
 
-    // look for new vids uploaded
-    readdir(appDir + newVidsDir)
-      .then(function (vids) {
-        console.log('', vids.length, 'new videos to re-encode');
-        console.log('vids', vids);
-        var encodeCommand = 'avconv -i $1 -vcodec libx264 -vprofile high -preset slow -b:v 1000k -maxrate 1000k -bufsize 200k -r 4 $2';
+  // look for new vids uploaded
+  readdir(appDir + newVidsDir)
+    .then(function (vids) {
+      console.log('', vids.length, 'new videos to re-encode');
+      console.log('vids', vids);
+      var encodeCommand = 'avconv -i $1 -vcodec libx264 -vprofile high -preset slow -b:v 1000k -maxrate 1000k -bufsize 200k -r 4 $2';
 
-        _.each(vids, function (vid) {
+      var commandPromise = function (c) {
+        var def = Q.defer();
 
-          var command = encodeCommand
-            .replace('$1', appDir + newVidsDir + '/' + vid)
-            .replace('$2', appDir + liveVidsDir + '/' + vid.replace(/^(.*?)\.avi$/, '$1.mp4'));
+        try {
+          console.log('running\n', c);
+          exec(c, function (error, stdout, stderr) {
+            if (error) {
+              console.log(error);
+              Q.reject(error);
+            }
+            sys.puts(stdout);
+            sys.puts(stderr);
+            Q.resolve(stdout + '\n' + stderr);
+          });
+        } catch (err) {
+          console.log('caught error encoding.  SKIPPING.')
+          Q.reject(err);
+        } finally {
+          // remove the old vid
+          console.log('deleting ', appDir + newVidsDir + '/' + vid);
+          unlink(appDir + newVidsDir + '/' + vid);
+        }
+        return def.promise;
+      };
 
-          console.log('running\n', command);
+      var commandPromises = _.map(vids, function (vid) {
 
-          try {
-            exec(command, function (error, stdout, stderr) {
-              if (error) {
-                console.log(error);
-              }
-              sys.puts(stdout);
-              sys.puts(stderr);
+        var command = encodeCommand
+          .replace('$1', appDir + newVidsDir + '/' + vid)
+          .replace('$2', appDir + liveVidsDir + '/' + vid.replace(/^(.*?)\.avi$/, '$1.mp4'));
+        return commandPromise(command);
+      });
 
-              // remove the old vid
-              console.log('deleting ', appDir + newVidsDir + '/' + vid)
-              unlink(appDir + newVidsDir + '/' + vid);
-            });
-          } catch (err) {
-            console.log('caught error encoding.  SKIPPING.')
-          }
+      // now execute the promises sequentially
+      commandPromises.reduce(Q.when, Q('initial'));
 
-        })
-      })
-      .catch(function (err) {
-        console.log('caught error', err);
-      })
+
+    })
+    .catch(function (err) {
+      console.log('caught error', err);
+    })
 
 })();
