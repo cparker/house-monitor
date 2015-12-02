@@ -11,9 +11,12 @@ var argv = require('minimist')(process.argv.slice(2));
 
 module.exports = (function () {
   var port = argv.port || 3000;
-  var motionContentDir = argv.motionContentDir || 'build/images';
-  var imageURLPrefix = argv.imageURLPrefix || 'images/';
+  var motionContentDir = argv.motionContentDir || '/opt/house-monitor/live-vids';
+  var imageURLPrefix = argv.imageURLPrefix || 'motionfiles/';
   var mockTemp = argv.mockTemp;
+
+  var tempAPIURL = "/house/api/temp";
+  var motionAPIURL = "/house/api/motion";
 
   /*
    [
@@ -43,7 +46,8 @@ module.exports = (function () {
       var stat = fs.fstatSync(fd);
       fs.closeSync(fd);
       return {
-        name: imageURLPrefix + f,
+        url: imageURLPrefix + f,
+        name: f,
         stat: stat
       }
     });
@@ -54,7 +58,8 @@ module.exports = (function () {
 
     // filter out only the vids
     var vids = _.filter(newFiles, function (fs) {
-      return fs.name.endsWith('.mp4');
+      var suffix = '.mp4';
+      return fs.name.match(suffix+"$") == suffix;
     });
 
     // for each vid, find its corresponding still image (.jpg) and make a pair
@@ -64,14 +69,15 @@ module.exports = (function () {
         var picFilename = noExtention + '-00.jpg';
         // confirm that we have the still
         var hasPic = _.find(newFiles, function (fs) {
+          console.log('fs.name',fs.name,'picFilename',picFilename);
           return fs.name == picFilename;
         });
 
         if (hasPic) {
           return {
             "eventDate": moment(vid.stat.mtime),
-            "pic": picFilename,
-            "vid": vid.name
+            "pic": imageURLPrefix + picFilename,
+            "vid": imageURLPrefix + vid.name
           }
         } else {
           console.log('skipping ', vid.name, ' because we couldnt find a matching pic', picFilename);
@@ -128,8 +134,8 @@ module.exports = (function () {
   app.use(morgan('combined'));
   app.use(express.static('build'));
 
-  app.get('/motion', handleMotion);
-  app.get('/temp', handleTemp);
+  app.get(motionAPIURL, handleMotion);
+  app.get(tempAPIURL, handleTemp);
 
   app.listen(port);
 
