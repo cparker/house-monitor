@@ -32,13 +32,16 @@ module.exports = (function () {
       .replace('$1', appDir + newVidsDir + '/' + vid)
       .replace('$2', appDir + liveVidsDir + '/' + vid.replace(/^(.*?)\.avi$/, '$1.mp4'));
     return function () {
-      console.log('running ',command);
-      return execPromise(command);
+      console.log('running ', command);
+      return execPromise(command).then(function(res) {
+        sys.puts(res[0]);
+        sys.puts(res[1]);
+      })
     };
   });
 
   // now execute the promises sequentially
-   commandPromises.reduce(Q.when, Q('initial'));
+  commandPromises.reduce(Q.when, Q('initial'));
 
 
 })();
