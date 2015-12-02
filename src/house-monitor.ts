@@ -39,21 +39,21 @@ export class HouseMonitor {
 
           // this works around an issue with angular2 pipes in safari
           // https://github.com/angular/angular/issues/3333
-          var latestDate = moment(temp.latest.date);
-          var latestDateStr = moment.format(dateFormat);
+          var latestDateMom = moment(temp.latest.date);
+          var latestDateStr = latestDateMom.format(dateFormat);
 
           var fixed = {
             "latest": {
               "dateStr": latestDateStr,
-              "date": latestDate.toDate(),
+              "date": latestDateMom.toDate(),
               "tempF": temp.latest.tempF
             },
             "all": _.map(temp.all, function (t) {
-              var date = moment(t.date).toDate();
-              var dateStr = date.format(dateFormat);
+              var dateMom = moment(t.date);
+              var dateStr = dateMom.format(dateFormat);
               return {
                 "dateStr": dateStr,
-                "date": date.toDate(),
+                "date": dateMom.toDate(),
                 "tempF": t.tempF
               }
             })
@@ -74,7 +74,7 @@ export class HouseMonitor {
     var xformEventDates = function (events) {
       console.log('transforming events', events);
       return _.map(events, function (e) {
-        var dateMom = moment(e.eventDate).toDate();
+        var dateMom = moment(e.eventDate);
         var dateStr = dateMom.format(dateFormat);
         return {
           eventDateStr: dateStr,
