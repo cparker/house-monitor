@@ -28,7 +28,7 @@ export class HouseMonitor {
     };
     self.events = [];
 
-    self.http.get('http://localhost:3000/temp')
+    self.http.get('/house/api/temp')
       .map(res => res.json())
       .subscribe(
       function (data) {
@@ -70,7 +70,7 @@ export class HouseMonitor {
       })
     };
 
-    self.http.get('http://localhost:3000/motion')
+    self.http.get('/house/api/motion')
       .map(res => res.json())
       .subscribe(
         data => self.events = xformEventDates(data),
