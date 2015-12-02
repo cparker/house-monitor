@@ -16,54 +16,29 @@ module.exports = (function () {
 
   var readdir = Q.nfbind(fs.readdir);
   var unlink = Q.nfbind(fs.unlink);
+  var execPromise = Q.denodeify(exec);
 
   // look for new vids uploaded
-  readdir(appDir + newVidsDir)
-    .then(function (vids) {
-      console.log('', vids.length, 'new videos to re-encode');
-      console.log('vids', vids);
-      var encodeCommand = 'avconv -i $1 -vcodec libx264 -vprofile high -preset slow -b:v 1000k -maxrate 1000k -bufsize 200k -r 4 $2';
-
-      var commandPromise = function (c) {
-        var def = Q.defer();
-
-        try {
-          console.log('running\n', c);
-          exec(c, function (error, stdout, stderr) {
-            if (error) {
-              console.log(error);
-              Q.reject(error);
-            }
-            sys.puts(stdout);
-            sys.puts(stderr);
-            Q.resolve(stdout + '\n' + stderr);
-          });
-        } catch (err) {
-          console.log('caught error encoding.  SKIPPING.')
-          Q.reject(err);
-        } finally {
-          // remove the old vid
-          console.log('deleting ', appDir + newVidsDir + '/' + vid);
-          unlink(appDir + newVidsDir + '/' + vid);
-        }
-        return def.promise;
-      };
-
-      var commandPromises = _.map(vids, function (vid) {
-
-        var command = encodeCommand
-          .replace('$1', appDir + newVidsDir + '/' + vid)
-          .replace('$2', appDir + liveVidsDir + '/' + vid.replace(/^(.*?)\.avi$/, '$1.mp4'));
-        return commandPromise(command);
-      });
-
-      // now execute the promises sequentially
-      commandPromises.reduce(Q.when, Q('initial'));
+  var vids = fs.readdirSync(appDir + newidsDir);
+  console.log('', vids.length, 'new videos to re-encode');
+  console.log('vids', vids);
 
 
-    })
-    .catch(function (err) {
-      console.log('caught error', err);
-    })
+  var encodeCommand = 'avconv -i $1 -vcodec libx264 -vprofile high -preset slow -b:v 1000k -maxrate 1000k -bufsize 200k -r 4 $2';
+
+  var commandPromises = _.map(vids, function (vid) {
+
+    var command = encodeCommand
+      .replace('$1', appDir + newVidsDir + '/' + vid)
+      .replace('$2', appDir + liveVidsDir + '/' + vid.replace(/^(.*?)\.avi$/, '$1.mp4'));
+    return function () {
+      console.log('running ',command);
+      return execPromise(command);
+    };
+  });
+
+  // now execute the promises sequentially
+   commandPromises.reduce(Q.when, Q('initial'));
+
 
 })();
