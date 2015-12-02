@@ -14,7 +14,6 @@ module.exports = (function () {
   var newVidsDir = '/new-vids';
   var liveVidsDir = '/live-vids';
 
-  var readdir = Q.nfbind(fs.readdir);
   var unlink = Q.nfbind(fs.unlink);
   var execPromise = Q.denodeify(exec);
 
@@ -22,7 +21,6 @@ module.exports = (function () {
   var vids = fs.readdirSync(appDir + newidsDir);
   console.log('', vids.length, 'new videos to re-encode');
   console.log('vids', vids);
-
 
   var encodeCommand = 'avconv -i $1 -vcodec libx264 -vprofile high -preset slow -b:v 1000k -maxrate 1000k -bufsize 200k -r 4 $2';
 
@@ -33,10 +31,15 @@ module.exports = (function () {
       .replace('$2', appDir + liveVidsDir + '/' + vid.replace(/^(.*?)\.avi$/, '$1.mp4'));
     return function () {
       console.log('running ', command);
-      return execPromise(command).then(function(res) {
-        sys.puts(res[0]);
-        sys.puts(res[1]);
-      })
+
+      return execPromise(command)
+        .then(function (res) {
+          sys.puts(res[0]);
+          sys.puts(res[1]);
+          unlink(appDir + newVidsDir + '/' + vid);
+        }).catch(function (err) {
+          sys.puts(err);
+        })
     };
   });
 
