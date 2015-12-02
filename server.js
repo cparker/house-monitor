@@ -108,6 +108,8 @@ module.exports = (function () {
 
   var handleTemp = function (req, res) {
 
+    var tempJSON = JSON.parse(fs.readFileSync('./temps.json', 'utf-8'));
+
     var mockResponse =
     {
       "all": [
@@ -126,8 +128,8 @@ module.exports = (function () {
       }
     };
 
-    return res.json(mockResponse);
 
+    res.json(tempJSON);
   };
 
   var app = express();
