@@ -1,9 +1,9 @@
 import {Injectable} from 'angular2/angular2';
 
 @Injectable()
-export class DataService {
+export class MockDataService {
   temp:Object;
-  events:Array;
+  events:Array<any>;
 
   constructor() {
     console.log('DataService');

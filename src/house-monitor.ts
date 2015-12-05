@@ -1,5 +1,14 @@
+/// <reference path="../typings/underscore/underscore.d.ts" />
+/// <reference path="../typings/moment/moment.d.ts" />
+
 import {Http, Response} from 'angular2/http'
-import {ComponentMetadata as Component, ViewMetadata as View, CORE_DIRECTIVES} from 'angular2/angular2';
+import {Component, View, CORE_DIRECTIVES} from 'angular2/angular2';
+import {DataService} from './data-service';
+import {MockDataService} from './mock-data-service';
+import * as moment from 'moment';
+
+
+declare var _:UnderscoreStatic;
 
 @Component({
   selector: 'house-monitor'
@@ -13,67 +22,22 @@ import {ComponentMetadata as Component, ViewMetadata as View, CORE_DIRECTIVES} f
 export class HouseMonitor {
   http:Http;
   temp:Object;
-  events:Array;
+  events:Array<Object>;
 
-  constructor(http:Http) {
+  constructor(http:Http, dataService:DataService, mockDataService:MockDataService) {
     let self = this;
     console.info('HouseMonitor Component Mounted Successfully');
     self.http = http;
 
-    self.temp = {
-      latest: {
-        tempF: -1,
-        date: new Date()
-      }
-    };
+    self.temp = mockDataService.getTemp();
+
     self.events = [];
 
     var dateFormat = 'MMM Do h:mm a Z';
 
-    self.http.get('/house/api/temp')
-      .map(res => res.json())
-      .subscribe(
-      function (data) {
-
-        var xformDates = function (temp) {
-
-          // this works around an issue with angular2 pipes in safari
-          // https://github.com/angular/angular/issues/3333
-          var latestDateMom = moment(temp.latest.date);
-          var latestDateStr = latestDateMom.format(dateFormat);
-
-          var fixed = {
-            "latest": {
-              "dateStr": latestDateStr,
-              "date": latestDateMom.toDate(),
-              "tempF": temp.latest.tempF
-            },
-            "all": _.map(temp.all, function (t) {
-              var dateMom = moment(t.date);
-              var dateStr = dateMom.format(dateFormat);
-              return {
-                "dateStr": dateStr,
-                "date": dateMom.toDate(),
-                "tempF": t.tempF
-              }
-            })
-          };
-
-          return fixed;
-        };
-
-        console.log('temp data looks like', data);
-        var newData = xformDates(data);
-        console.log('new data looks like', newData);
-        self.temp = newData;
-      },
-        err => console.log('ERRRRR', err),
-      () => console.log('getTemp complete')
-    );
-
     var xformEventDates = function (events) {
       console.log('transforming events', events);
-      return _.map(events, function (e) {
+      return _.map(events, function (e:any) {
         var dateMom = moment(e.eventDate);
         var dateStr = dateMom.format(dateFormat);
         return {
@@ -86,7 +50,7 @@ export class HouseMonitor {
     };
 
     self.http.get('/house/api/motion')
-      .map(res => res.json())
+      .map(res => (<Response>res).json())
       .subscribe(
         data => self.events = xformEventDates(data),
         err => console.log('ERRRRR', err),

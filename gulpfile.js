@@ -1,9 +1,10 @@
 var gulp = require('gulp'),
   rename = require('gulp-rename'),
-  traceur = require('gulp-traceur'),
   webserver = require('gulp-webserver'),
   debug = require('gulp-debug'),
-  sass = require('gulp-sass');
+  sass = require('gulp-sass'),
+  typescript = require('gulp-typescript'),
+  tsConfig = require('./tsconfig.json');
 
 // run init tasks
 gulp.task('default', ['dependencies', 'js', 'html', 'images', 'sass']);
@@ -15,7 +16,7 @@ gulp.task('dev', ['default', 'watch', 'serve']);
 gulp.task('serve', function () {
   gulp.src('build')
     .pipe(webserver({
-      host : '0.0.0.0',
+      host: '0.0.0.0',
       open: true,
       livereload: true
     }));
@@ -34,6 +35,7 @@ gulp.task('dependencies', function () {
   return gulp.src([
     'node_modules/traceur/bin/traceur-runtime.js',
     'node_modules/systemjs/dist/system-csp-production.src.js',
+    'node_modules/es6-shim/es6-shim.min.js',
     'node_modules/systemjs/dist/system.js',
     'node_modules/reflect-metadata/Reflect.js',
     'node_modules/angular2/bundles/angular2.js',
@@ -41,7 +43,7 @@ gulp.task('dependencies', function () {
     'node_modules/moment/moment.js',
     'node_modules/underscore/underscore.js'
   ])
-    .pipe(gulp.dest('build/lib'));
+    .pipe(gulp.dest('build'));
 });
 
 gulp.task('sass', function () {
@@ -53,24 +55,10 @@ gulp.task('sass', function () {
 
 // transpile & move js
 gulp.task('js', function () {
-  return gulp.src(['src/**/*.ts', 'src/**/*.js'])
-    .pipe(debug())
-    .pipe(rename({
-      extname: ''
-    }))
-    .pipe(traceur({
-      modules: 'instantiate',
-      moduleName: true,
-      annotations: true,
-      types: true,
-      memberVariables: true,
-      arrowFunctions: true,
-      require : true
-    }))
-    .pipe(rename({
-      extname: '.js'
-    }))
-    .pipe(gulp.dest('build'));
+  var tsResult = gulp.src(['src/**/*.ts'])
+    .pipe(typescript(tsConfig.compilerOptions));
+
+  return tsResult.js.pipe(gulp.dest('build'));
 });
 
 // move html
