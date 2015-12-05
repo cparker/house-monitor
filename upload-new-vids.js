@@ -12,6 +12,7 @@ var argv = require('minimist')(process.argv.slice(2));
 module.exports = (function () {
 
   var readdir = Q.nfbind(fs.readdir);
+  var execPromise = Q.nfbind(exec);
 
   var motionContentDir = argv.motionContentDir || '/media/iomega/motion';
   var lastCheckDir = argv.lastCheckDir || '/bigopt/house-monitor';
@@ -83,55 +84,58 @@ module.exports = (function () {
         return f.name.match('.jpg' + '$') == '.jpg';
       });
 
-      // MOVIES
-      _.each(movies, function (fileToUpload) {
-        try {
-          console.log('running ', movieUploadCommand.replace('$2', fileToUpload.name));
-          exec(movieUploadCommand.replace('$2', fileToUpload.name), function (err, stdout, stderr) {
-            if (err) {
-              console.log(err);
-            }
-            sys.puts(stdout);
-            sys.puts(stderr);
+      var logExecIO = function (io) {
+        console.log('STDIN: ', io[0]);
+        console.log('STDERR: ', io[1]);
+      };
 
-          });
-        } catch (err) {
-          console.log('caught ', err, ' skipping file');
+      var logExecErr = function (err) {
+        console.log('error during exec', err);
+      };
+
+      // MOVIES
+      var movieUploadPromises = _.map(movies, function (fileToUpload) {
+        return function () {
+          var command = movieUploadCommand.replace('$2', fileToUpload.name);
+          console.log('running', command);
+
+          return execPromise(command)
+            .then(logExecIO).catch(logExecErr);
         }
       });
 
       // PICS
-      _.each(pics, function (fileToUpload) {
-        try {
-          console.log('running ', picUploadCommand.replace('$2', fileToUpload.name));
-          exec(picUploadCommand.replace('$2', fileToUpload.name), function (err, stdout, stderr) {
-            if (err) {
-              console.log(err);
-            }
-            sys.puts(stdout);
-            sys.puts(stderr);
-
-          });
-        } catch (err) {
-          console.log('caught ', err, ' skipping file');
+      var picUploadPromises = _.map(pics, function (fileToUpload) {
+        var command = picUploadCommand.replace('$2', fileToUpload.name);
+        console.log('running ', command);
+        return function () {
+          return execPromise(command)
+            .then(logExecIO).catch(logExecErr);
         }
       });
 
       // TEMP
-      try {
-        exec(tempUploadCommand, function (err, stdout, stderr) {
-          if (err) {
-            console.log(err);
-          }
-          sys.puts(stdout);
-          sys.puts(stderr);
-        });
+      var tempUploadPromise = function () {
+        console.log('uploading temperature readings');
+        return execPromise(tempUploadCommand)
+          .then(logExecIO)
+          .catch(logExecErr);
+      };
 
-      } catch (err) {
-        console.log('caught error uploading temps', err);
-      }
+      var writeLastCheck = function () {
+        console.log('finishing up');
+        return fs.writeFile(lastCheckDir + '/' + lastCheckFile, JSON.stringify({date: new Date()}))
+          .then(function () {
 
-      fs.writeFileSync(lastCheckDir + '/' + lastCheckFile, JSON.stringify({date: new Date()}));
+          })
+          .catch(function (err) {
+            console.log('error writing lastCheck', err);
+          })
+      };
+
+      var allPromises = movieUploadPromises.concat(picUploadPromises).concat([writeLastCheck])
+      allPromises.reduce(Q.when, Q('init'));
+
     })
     .catch(function (err) {
       console.log('caught ', err);
