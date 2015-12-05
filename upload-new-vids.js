@@ -133,7 +133,7 @@ module.exports = (function () {
           })
       };
 
-      var allPromises = movieUploadPromises.concat(picUploadPromises).concat([writeLastCheck])
+      var allPromises = movieUploadPromises.concat(picUploadPromises).concat(tempUploadPromise).concat([writeLastCheck])
       allPromises.reduce(Q.when, Q('init'));
 
 
