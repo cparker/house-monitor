@@ -25,8 +25,8 @@ module.exports = (function () {
   var tempsFilename = 'temps.json';
   var tempUploadLocation = argv.tempUploadLocation || '/opt/house-monitor';
 
-  readdir(motionContentDir)
-    .then(function (motionFiles) {
+  var motionFiles = fs.readdirSync(motionContentDir);
+
 
       var lastCheck;
 
@@ -106,9 +106,9 @@ module.exports = (function () {
 
       // PICS
       var picUploadPromises = _.map(pics, function (fileToUpload) {
-        var command = picUploadCommand.replace('$2', fileToUpload.name);
-        console.log('running ', command);
         return function () {
+          var command = picUploadCommand.replace('$2', fileToUpload.name);
+          console.log('running ', command);
           return execPromise(command)
             .then(logExecIO).catch(logExecErr);
         }
@@ -136,9 +136,5 @@ module.exports = (function () {
       var allPromises = movieUploadPromises.concat(picUploadPromises).concat([writeLastCheck])
       allPromises.reduce(Q.when, Q('init'));
 
-    })
-    .catch(function (err) {
-      console.log('caught ', err);
-    })
 
 })();
