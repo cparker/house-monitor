@@ -11,5 +11,6 @@ mock-motion-content/
 re-encode.log
 temps.json
 server.log
+basic-auth
 upload.log
 motion.log
