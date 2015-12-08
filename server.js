@@ -111,26 +111,8 @@ module.exports = (function () {
 
     var tempJSON = JSON.parse(fs.readFileSync('./temps.json', 'utf-8'));
 
-    var mockResponse =
-    {
-      "all": [
-        {
-          "date": "2015-11-30T19:08:52.335Z",
-          "tempF": 45.1
-        },
-        {
-          "date": "2015-11-30T19:09:08.779Z",
-          "tempF": 45.1
-        }
-      ],
-      "latest": {
-        "date": "2015-11-30T19:09:49.947Z",
-        "tempF": 45.1
-      }
-    };
-
-
-    res.json(tempJSON);
+    //res.json(tempJSON);
+    res.send(401);
   };
 
   var app = express();

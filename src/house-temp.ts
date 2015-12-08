@@ -2,7 +2,7 @@ import {Http, Response} from 'angular2/http'
 import {Component, View, CORE_DIRECTIVES} from 'angular2/angular2';
 import {MockDataService} from './mock-data-service';
 import {DataService} from './data-service';
-
+import {ApplicationState} from './application-state';
 
 @Component({
   selector: 'house-temp'
@@ -38,7 +38,16 @@ export class HouseTemp {
   constructor(dataService:DataService) {
     console.log('house temp constructor');
     let self = this;
-    dataService.getTemp().subscribe(res => self.temp = res);
+    dataService.getTemp().subscribe(
+        res => self.temp = res,
+        err => {
+        console.log('got error in getTemp', err);
+        if ((<any>err).status === 401) {
+          console.log('user needs to authenticate');
+          ApplicationState.getInstance().isLoggedIn = false;
+        }
+      }
+    );
     console.log('self.temp now', self.temp);
   }
 

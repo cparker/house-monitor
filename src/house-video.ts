@@ -2,7 +2,7 @@ import {Http, Response} from 'angular2/http'
 import {Component, View, CORE_DIRECTIVES} from 'angular2/angular2';
 import {MockDataService} from './mock-data-service';
 import {DataService} from './data-service';
-
+import {ApplicationState} from './application-state';
 
 @Component({
   selector: 'house-video'
@@ -43,6 +43,14 @@ export class HouseVideo {
   constructor(dataService:DataService) {
     console.log('house video');
     let self = this;
-    dataService.getEvents().subscribe(res => self.events = res);
+    dataService.getEvents().subscribe(
+        res => self.events = res,
+        err => {
+        if ((<any>err).status == 401) {
+          console.log('user needs to authenticate');
+          ApplicationState.getInstance().isLoggedIn = false;
+        }
+      }
+    );
   }
 }

@@ -1,7 +1,6 @@
 import {Http, Response} from 'angular2/http'
 import {Component, View, CORE_DIRECTIVES} from 'angular2/angular2';
-import {MockDataService} from './mock-data-service';
-import {DataService} from './data-service';
+import {ApplicationState} from './application-state';
 
 
 @Component({
@@ -12,12 +11,14 @@ import {DataService} from './data-service';
 @View({
   directives: [CORE_DIRECTIVES],
   template: `
-  <div class='login'>
-  <h1>login</h1>
+  <div *ng-if="!applicationState.isLoggedIn" class='login'>
+  <h1>logged in {{applicationState.isLoggedIn}}</h1>
   </div>
   `,
   styles: [`
     .login {
+       background-color: gray;
+       border: 1px solid red;
        position:absolute;
        height:100%;
        width:100%;
@@ -26,10 +27,11 @@ import {DataService} from './data-service';
 })
 
 export class Login {
-  isLoggedIn:boolean;
+  applicationState:ApplicationState;
 
   constructor() {
+    console.log('login');
     let self = this;
-    self.isLoggedIn = false;
+    self.applicationState = ApplicationState.getInstance();
   }
 }

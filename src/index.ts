@@ -12,7 +12,7 @@ import {Login} from './login';
 })
 
 @View({
-  directives: [HouseTemp, HouseVideo],
+  directives: [HouseTemp, HouseVideo, Login],
 
   template: `
     <login></login>

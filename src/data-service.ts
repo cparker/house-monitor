@@ -17,6 +17,7 @@ export class DataService {
   dateFormat:string;
   tempAPI:string;
   eventsAPI:string;
+  loggedInAPI:string;
 
   constructor(http:Http) {
     console.log('DataService constructor');
@@ -24,6 +25,7 @@ export class DataService {
     this.dateFormat = 'MMM Do h:mm a Z';
     this.tempAPI = '/house/api/temp';
     this.eventsAPI = '/house/api/motion';
+    this.loggedInAPI = '/house/isLoggedIn';
   }
 
   public getTemp() {
@@ -79,6 +81,13 @@ export class DataService {
         return z;
 
       })
+  }
+
+
+  public isLoggedIn() {
+    var self = this;
+
+    return self.http.get(self.loggedInAPI)
   }
 
 
