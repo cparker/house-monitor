@@ -1,6 +1,7 @@
 import {Http, Response} from 'angular2/http'
 import {Component, View, CORE_DIRECTIVES} from 'angular2/angular2';
 import {MockDataService} from './mock-data-service';
+import {DataService} from './data-service';
 
 
 @Component({
@@ -39,9 +40,9 @@ import {MockDataService} from './mock-data-service';
 export class HouseVideo {
   events:Array<any>;
 
-  constructor(mockDataService:MockDataService) {
+  constructor(dataService:DataService) {
     console.log('house video');
     let self = this;
-    self.events = mockDataService.getEvents();
+    dataService.getEvents().subscribe(res => self.events = res);
   }
 }

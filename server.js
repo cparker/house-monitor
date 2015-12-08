@@ -10,9 +10,10 @@ var moment = require('moment');
 var argv = require('minimist')(process.argv.slice(2));
 
 module.exports = (function () {
+  console.log('argv',argv);
   var port = argv.port || 3000;
   var motionContentDir = argv.motionContentDir || '/opt/house-monitor/live-vids';
-  var imageURLPrefix = argv.imageURLPrefix || 'motionfiles/';
+  var imageURLPrefix = argv.imageURLPrefix != undefined ? argv.imageURLPrefix : 'motionfiles/';
   var mockTemp = argv.mockTemp;
 
   var tempAPIURL = "/house/api/temp";

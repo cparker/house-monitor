@@ -14,18 +14,23 @@ export class DataService {
   http:Http;
   temp:Object;
   events:Array<any>;
+  dateFormat:string;
+  tempAPI:string;
+  eventsAPI:string;
 
   constructor(http:Http) {
     console.log('DataService constructor');
     this.http = http;
+    this.dateFormat = 'MMM Do h:mm a Z';
+    this.tempAPI = '/house/api/temp';
+    this.eventsAPI = '/house/api/motion';
   }
 
   public getTemp() {
 
     var self = this;
-    var dateFormat = 'MMM Do h:mm a Z';
 
-    return self.http.get('/house/api/temp')
+    return self.http.get(self.tempAPI)
       .map(res => (<Response>res).json())
       .map(x => {
         var tempJson = <any>x;
@@ -33,9 +38,9 @@ export class DataService {
         // this works around an issue with angular2 pipes in safari
         // https://github.com/angular/angular/issues/3333
         var latestDateMom = moment(tempJson.latest.date);
-        var latestDateStr = latestDateMom.format(dateFormat);
+        var latestDateStr = latestDateMom.format(self.dateFormat);
 
-        var fixed = {
+        return {
           "latest": {
             "dateStr": latestDateStr,
             "date": latestDateMom.toDate(),
@@ -43,7 +48,7 @@ export class DataService {
           },
           "all": _.map(tempJson.all, function (t:any) {
             var dateMom = moment(t.date);
-            var dateStr = dateMom.format(dateFormat);
+            var dateStr = dateMom.format(self.dateFormat);
             return {
               "dateStr": dateStr,
               "date": dateMom.toDate(),
@@ -52,44 +57,30 @@ export class DataService {
           })
         };
 
-        console.log('FFF fixed is',fixed);
-        return fixed;
-
       });
 
   }
 
-  getEvents() {
-    return this.events;
+  public getEvents() {
+    var self = this;
+
+    return self.http.get(self.eventsAPI)
+      .map(res => (<Response>res).json())
+      .map(x => {
+        var eventJson = <any>x;
+
+        var z = _.map(eventJson, function (e) {
+          var dateM = moment((<any>e).eventDate);
+          (<any>e).eventDateStr = dateM.format(self.dateFormat);
+          return e;
+        });
+
+        console.log('events',z);
+        return z;
+
+      })
   }
 
 
-  fetchTemp() {
-    this.http.get('http://localhost:3000/temp')
-      .map(res => (<any>res).json())
-      .subscribe(
-        data => this.temp = data,
-        err => console.log('ERRRRR', err),
-      () => console.log('getTemp complete')
-    );
-  }
-
-  transformEventDates(events) {
-
-    return _.map(events, function (e) {
-      return moment((<any>e).eventDate).toDate();
-    })
-
-  }
-
-  fetchEvents() {
-    this.http.get('http://localhost:3000/motion')
-      .map(res => (<any>res).json())
-      .subscribe(
-        data => this.events = this.transformEventDates(data),
-        err => console.log('ERRRRR', err),
-      () => console.log('getTemp complete')
-    );
-  }
 
 }
