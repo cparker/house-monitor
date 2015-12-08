@@ -8,8 +8,5 @@
     "moduleResolution": "node",
     "removeComments": true,
     "sourceMap": false
-  },
-  "exclude": [
-    "node_modules"
-  ]
+  }
 }

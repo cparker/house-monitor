@@ -31,7 +31,7 @@ export class HouseMonitor {
 
     self.temp = mockDataService.getTemp();
 
-    self.events = [];
+    self.events = mockDataService.getEvents();
 
     var dateFormat = 'MMM Do h:mm a Z';
 
@@ -48,15 +48,6 @@ export class HouseMonitor {
         }
       })
     };
-
-    self.http.get('/house/api/motion')
-      .map(res => (<Response>res).json())
-      .subscribe(
-        data => self.events = xformEventDates(data),
-        err => console.log('ERRRRR', err),
-      () => console.log('getEvents complete.  self.events now', self.events)
-    );
-
 
   }
 

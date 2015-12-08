@@ -1,5 +1,13 @@
+/// <reference path="../typings/underscore/underscore.d.ts" />
+/// <reference path="../typings/moment/moment.d.ts" />
+
 import {Http, Response} from 'angular2/http'
 import {Injectable} from 'angular2/angular2';
+import m = require('moment');
+
+declare var _:UnderscoreStatic;
+var moment:moment.MomentStatic;
+moment = (m as any).default || m;
 
 @Injectable()
 export class DataService {
@@ -8,58 +16,46 @@ export class DataService {
   events:Array<any>;
 
   constructor(http:Http) {
-    console.log('DataService');
+    console.log('DataService constructor');
     this.http = http;
   }
 
-  public getTemp():any {
+  public getTemp() {
 
     var self = this;
     var dateFormat = 'MMM Do h:mm a Z';
 
-    self.http.get('/house/api/temp')
+    return self.http.get('/house/api/temp')
       .map(res => (<Response>res).json())
-      .subscribe(
-      function (data) {
+      .map(x => {
+        var tempJson = <any>x;
 
-        var xformDates = function (temp) {
+        // this works around an issue with angular2 pipes in safari
+        // https://github.com/angular/angular/issues/3333
+        var latestDateMom = moment(tempJson.latest.date);
+        var latestDateStr = latestDateMom.format(dateFormat);
 
-          // this works around an issue with angular2 pipes in safari
-          // https://github.com/angular/angular/issues/3333
-          var latestDateMom = moment(temp.latest.date);
-          var latestDateStr = latestDateMom.format(dateFormat);
-
-          var fixed:any = {
-            "latest": {
-              "dateStr": latestDateStr,
-              "date": latestDateMom.toDate(),
-              "tempF": temp.latest.tempF
-            },
-            "all": _.map(temp.all, function (t:any) {
-              var dateMom = moment(t.date);
-              var dateStr = dateMom.format(dateFormat);
-              return {
-                "dateStr": dateStr,
-                "date": dateMom.toDate(),
-                "tempF": t.tempF
-              }
-            })
-          };
-
-          return fixed;
+        var fixed = {
+          "latest": {
+            "dateStr": latestDateStr,
+            "date": latestDateMom.toDate(),
+            "tempF": tempJson.latest.tempF
+          },
+          "all": _.map(tempJson.all, function (t:any) {
+            var dateMom = moment(t.date);
+            var dateStr = dateMom.format(dateFormat);
+            return {
+              "dateStr": dateStr,
+              "date": dateMom.toDate(),
+              "tempF": t.tempF
+            }
+          })
         };
 
-        console.log('temp data looks like', data);
-        var newData = xformDates(data);
-        console.log('new data looks like', newData);
-        self.temp = newData;
-      },
-        err => console.log('ERRRRR', err),
-      () => console.log('getTemp complete')
-    );
+        console.log('FFF fixed is',fixed);
+        return fixed;
 
-    return self.temp;
-
+      });
 
   }
 

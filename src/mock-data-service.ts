@@ -6,7 +6,7 @@ export class MockDataService {
   events:Array<any>;
 
   constructor() {
-    console.log('DataService');
+    console.log('mock DataService');
 
     this.temp = {
       "all": [
@@ -20,6 +20,7 @@ export class MockDataService {
         }
       ],
       "latest": {
+        "dateStr" : "Mon Dec 7th, 7:07 MDT",
         "date": moment("2015-11-29T19:09:49.947Z").toDate(),
         "tempF": 45.1
       }
