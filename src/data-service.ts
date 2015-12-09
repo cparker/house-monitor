@@ -33,7 +33,13 @@ export class DataService {
     var self = this;
 
     return self.http.get(self.tempAPI)
-      .map(res => (<Response>res).json())
+      .map(r =>  {
+        var res = <any>r;
+        if(res.status != 200) { 
+          throw res;
+        }
+        return (<any>res).json();
+      })
       .map(x => {
         var tempJson = <any>x;
 
@@ -67,7 +73,11 @@ export class DataService {
     var self = this;
 
     return self.http.get(self.eventsAPI)
-      .map(res => (<Response>res).json())
+      .map(r => {
+        var res = <any>r;
+        if(res.status != 200) { throw res; }
+        return (<any>res).json();
+      })
       .map(x => {
         var eventJson = <any>x;
 

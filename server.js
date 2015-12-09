@@ -171,7 +171,11 @@ module.exports = (function () {
 
       if (req.session.isLoggedIn != true) {
         console.log('no no no');
-        res.sendStatus(401);
+        res.format({
+          'application/json' : function() {
+            res.send(401, { message : 'Unauthorized' });
+          }
+        })
       } else {
         console.log('yes yes yes');
         next();

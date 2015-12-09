@@ -16,7 +16,7 @@ import {EventService} from './event-service';
       <div class="login-fields">
           <form [ng-form-model]="loginForm" (submit)="doLogin($event)">
               <div class="password-field"><input ng-control="password" class="password-input" type="password" placeholder="password"/></div>
-              <div class="button submit"><input type="submit">submit</input></div>
+              <div class="button submit"><input type="submit"/></div>
           </form>
       </div>
   </div>
