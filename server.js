@@ -8,16 +8,28 @@ var fs = require('fs');
 var _ = require('underscore');
 var moment = require('moment');
 var argv = require('minimist')(process.argv.slice(2));
+var bodyParser = require('body-parser');
 
 module.exports = (function () {
-  console.log('argv',argv);
+  console.log('argv', argv);
   var port = argv.port || 3000;
   var motionContentDir = argv.motionContentDir || '/opt/house-monitor/live-vids';
   var imageURLPrefix = argv.imageURLPrefix != undefined ? argv.imageURLPrefix : 'motionfiles/';
   var mockTemp = argv.mockTemp;
+  var passwordFile = argv.passwordFile || '.pass';
 
   var tempAPIURL = "/house/api/temp";
   var motionAPIURL = "/house/api/motion";
+  var loginAPIURL = "/house/api/login";
+
+  // read a password file
+  var pw;
+  try {
+     pw = fs.readFileSync(passwordFile, 'utf-8').trim();
+  } catch (err) {
+    console.log('warning, no .pass file, using some crazy default');
+    pw = 's9df7s9df7sd9fs';
+  }
 
   /*
    [
@@ -61,7 +73,7 @@ module.exports = (function () {
     // filter out only the vids
     var vids = _.filter(newFiles, function (fs) {
       var suffix = '.mp4';
-      return fs.name.match(suffix+"$") == suffix;
+      return fs.name.match(suffix + "$") == suffix;
     });
 
     // for each vid, find its corresponding still image (.jpg) and make a pair
@@ -112,15 +124,26 @@ module.exports = (function () {
     var tempJSON = JSON.parse(fs.readFileSync('./temps.json', 'utf-8'));
 
     //res.json(tempJSON);
-    res.send(401);
+    res.sendStatus(401);
+  };
+
+  var handleLogin = function (req, res) {
+     if (req.body.password.trim() === pw.trim()) {
+       res.sendStatus(200);
+     } else {
+        res.sendStatus(401);
+     }
   };
 
   var app = express();
   app.use(morgan('combined'));
   app.use(express.static('build'));
-
+  app.use(bodyParser.urlencoded({
+    extended: true
+  }));
   app.get(motionAPIURL, handleMotion);
   app.get(tempAPIURL, handleTemp);
+  app.post(loginAPIURL, handleLogin);
 
   app.listen(port);
 

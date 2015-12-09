@@ -10,9 +10,8 @@ export class ApplicationState {
       throw new Error("cant new a singleton");
     }
 
-    console.log('login');
     let self = this;
-    self.isLoggedIn = true;
+    self.isLoggedIn = false;
   }
 
   static getInstance():ApplicationState {

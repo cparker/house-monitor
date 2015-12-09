@@ -1,7 +1,7 @@
 /// <reference path="../typings/underscore/underscore.d.ts" />
 /// <reference path="../typings/moment/moment.d.ts" />
 
-import {Http, Response} from 'angular2/http'
+import {Http, Response, Headers} from 'angular2/http'
 import {Injectable} from 'angular2/angular2';
 import m = require('moment');
 
@@ -17,7 +17,7 @@ export class DataService {
   dateFormat:string;
   tempAPI:string;
   eventsAPI:string;
-  loggedInAPI:string;
+  loginAPI:string;
 
   constructor(http:Http) {
     console.log('DataService constructor');
@@ -25,7 +25,7 @@ export class DataService {
     this.dateFormat = 'MMM Do h:mm a Z';
     this.tempAPI = '/house/api/temp';
     this.eventsAPI = '/house/api/motion';
-    this.loggedInAPI = '/house/isLoggedIn';
+    this.loginAPI = '/house/api/login';
   }
 
   public getTemp() {
@@ -84,11 +84,16 @@ export class DataService {
   }
 
 
-  public isLoggedIn() {
+  public submitLogin(pw:string) {
     var self = this;
+    var headers = new Headers();
+    headers.append('Content-Type', 'application/x-www-form-urlencoded');
+    var submit = 'password='+pw;
 
-    return self.http.get(self.loggedInAPI)
+    return self.http.post(self.loginAPI, submit, { headers: headers});
   }
+
+
 
 
 
