@@ -46,7 +46,7 @@ export class DataService {
           "latest": {
             "dateStr": latestDateStr,
             "date": latestDateMom.toDate(),
-            "tempF": tempJson.latest.tempF
+            "tempF": tempJson.latest.tempF.toPrecision(3)
           },
           "all": _.map(tempJson.all, function (t:any) {
             var dateMom = moment(t.date);
