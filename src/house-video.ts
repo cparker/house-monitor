@@ -2,7 +2,7 @@ import {Http, Response} from 'angular2/http'
 import {Component, View, CORE_DIRECTIVES} from 'angular2/angular2';
 import {MockDataService} from './mock-data-service';
 import {DataService} from './data-service';
-import {ApplicationState} from './application-state';
+import {EventService} from './event-service';
 
 @Component({
   selector: 'house-video'
@@ -30,8 +30,8 @@ import {ApplicationState} from './application-state';
     }
 
     .pic-container {
-      height:100%;
-      overflow: scroll;
+      height:98%;
+      overflow-y: scroll;
     }
   `]
 })
@@ -39,18 +39,38 @@ import {ApplicationState} from './application-state';
 
 export class HouseVideo {
   events:Array<any>;
+  dataService:DataService;
+  eventService:EventService;
 
-  constructor(dataService:DataService) {
-    console.log('house video');
+
+  constructor(dataService:DataService, evt:EventService) {
+    console.log('house video constructor');
     let self = this;
-    dataService.getEvents().subscribe(
+    self.dataService = dataService;
+    self.eventService = evt;
+
+    self.fetchEvents();
+
+    evt.emitter.subscribe((event) => {
+      console.log('house-video received event', event);
+      if (event == 'login-successful') {
+        self.fetchEvents();
+      }
+    });
+  }
+
+  fetchEvents() {
+    let self = this;
+    self.dataService.getEvents().subscribe(
         res => self.events = res,
         err => {
         if ((<any>err).status == 401) {
           console.log('user needs to authenticate');
-          ApplicationState.getInstance().isLoggedIn = false;
+          self.eventService.emitter.next('unauthorized');
         }
       }
     );
   }
+
+
 }

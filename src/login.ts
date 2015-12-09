@@ -1,7 +1,7 @@
 import {Http, Response} from 'angular2/http'
-import {Component, View, CORE_DIRECTIVES, Validators, FormBuilder} from 'angular2/angular2';
-import {ApplicationState} from './application-state';
+import {Output, EventEmitter, Component, View, CORE_DIRECTIVES, Validators, FormBuilder} from 'angular2/angular2';
 import {DataService} from './data-service';
+import {EventService} from './event-service';
 
 
 @Component({
@@ -12,7 +12,7 @@ import {DataService} from './data-service';
 @View({
   directives: [CORE_DIRECTIVES],
   template: `
-  <div *ng-if="!applicationState.isLoggedIn" class='login'>
+  <div *ng-if="!isLoggedIn" class='login'>
       <div class="login-fields">
           <form [ng-form-model]="loginForm" (submit)="doLogin($event)">
               <div class="password-field"><input ng-control="password" class="password-input" type="password" placeholder="password"/></div>
@@ -46,19 +46,34 @@ import {DataService} from './data-service';
 })
 
 export class Login {
-  applicationState:ApplicationState;
   loginForm:any;
   dataService:DataService;
+  eventService:EventService;
 
-  constructor(fb:FormBuilder, dataService:DataService) {
+  // assume true, and the first time the app calls REST apis, they will 401, which will set this to false
+  // and show the modal login dialog
+  isLoggedIn:boolean = true;
+
+  constructor(fb:FormBuilder, dataService:DataService, eventService:EventService) {
     console.log('login');
     let self = this;
-    self.applicationState = ApplicationState.getInstance();
     self.dataService = dataService;
+    self.eventService = eventService;
 
     this.loginForm = fb.group({
       password: ["", Validators.required]
     });
+
+    // register for the unauthorized event so we can change isLoggedIn
+    eventService.emitter.subscribe(event => {
+        if (event == 'unauthorized') {
+          console.log('received unauthorized event');
+          self.isLoggedIn = false;
+        }
+      },
+        err => console.log(err),
+        complete => console.log(complete)
+    );
   }
 
   doLogin(event) {
@@ -69,11 +84,11 @@ export class Login {
     self.dataService.submitLogin(this.loginForm.controls.password.value).subscribe(
         res => {
         console.log('login successful');
-        self.applicationState.isLoggedIn = true;
+        self.eventService.emitter.next('login-successful');
+        self.isLoggedIn = true;
       },
         err => {
         console.log('login error', err);
-        self.applicationState.isLoggedIn = false;
       }
     );
 
