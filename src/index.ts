@@ -7,6 +7,7 @@ import {HouseVideo} from './house-video';
 import {Login} from './login';
 import {EventService} from './event-service';
 import {TempChart} from './temp-chart';
+import {MockTemps} from './mocktemps';
 
 @Component({
   selector: 'main'
@@ -35,5 +36,6 @@ bootstrap(Main, [
   HouseVideo,
   Login,
   EventService,
-  TempChart
+  TempChart,
+  MockTemps
 ]);

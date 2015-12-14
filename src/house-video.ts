@@ -49,8 +49,8 @@ export class HouseVideo {
     self.dataService = dataService;
     self.eventService = evt;
 
-    //self.fetchEvents();
-    self.events = mockDataService.getEvents();
+    self.fetchEvents();
+    // self.events = mockDataService.getEvents();
 
     evt.emitter.subscribe((event) => {
       console.log('house-video received event', event);

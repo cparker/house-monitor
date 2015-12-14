@@ -43,8 +43,8 @@ export class HouseTemp {
     self.dataService = dataService;
     self.eventService = evt;
 
-    //self.fetchTemp();
-    self.temp = mockDataService.getTemp();
+    self.fetchTemp();
+    //self.temp = mockDataService.getTemp();
 
     // subscribe to login event so that we know to go grab the data
     // this is for after the user submits the login form

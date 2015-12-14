@@ -18,6 +18,7 @@ module.exports = (function () {
   var imageURLPrefix = argv.imageURLPrefix != undefined ? argv.imageURLPrefix : 'motionfiles/';
   var mockTemp = argv.mockTemp;
   var passwordFile = argv.passwordFile || '.pass';
+  var tempsFile = argv.tempsFile || './temps.json';
 
   var tempAPIURL = "/house/api/temp";
   var motionAPIURL = "/house/api/motion";
@@ -121,7 +122,7 @@ module.exports = (function () {
 
 
   var handleTemp = function (req, res) {
-    var tempJSON = JSON.parse(fs.readFileSync('./temps.json', 'utf-8'));
+    var tempJSON = JSON.parse(fs.readFileSync(tempsFile, 'utf-8'));
     res.json(tempJSON);
   };
 
