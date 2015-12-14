@@ -37,13 +37,14 @@ export class HouseTemp {
   dataService:DataService;
   eventService:EventService;
 
-  constructor(dataService:DataService, evt:EventService) {
+  constructor(dataService:DataService, evt:EventService,mockDataService:MockDataService) {
     console.log('house temp constructor');
     let self = this;
     self.dataService = dataService;
     self.eventService = evt;
 
-    self.fetchTemp();
+    //self.fetchTemp();
+    self.temp = mockDataService.getTemp();
 
     // subscribe to login event so that we know to go grab the data
     // this is for after the user submits the login form

@@ -30,18 +30,18 @@ export class MockDataService {
     this.events = [
       {
         eventDate: new Date(),
-        pic: 'images/sampleEventThumb.jpg',
-        vid: 'images/sampleBunny.mp4'
+        pic: 'images/sampleEvent.jpg',
+        vid: 'images/sampleEvent.mp4'
       },
       {
         eventDate: new Date(),
-        pic: 'images/sampleEventThumb.jpg',
-        vid: 'images/sampleBunny.mp4'
+        pic: 'images/sampleEvent.jpg',
+        vid: 'images/sampleEvent.mp4'
       },
       {
         eventDate: new Date(),
-        pic: 'images/sampleEventThumb.jpg',
-        vid: 'images/sampleBunny.mp4'
+        pic: 'images/sampleEvent.jpg',
+        vid: 'images/sampleEvent.mp4'
       }
     ]
   }

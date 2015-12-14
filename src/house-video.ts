@@ -43,13 +43,14 @@ export class HouseVideo {
   eventService:EventService;
 
 
-  constructor(dataService:DataService, evt:EventService) {
+  constructor(dataService:DataService, evt:EventService, mockDataService:MockDataService) {
     console.log('house video constructor');
     let self = this;
     self.dataService = dataService;
     self.eventService = evt;
 
-    self.fetchEvents();
+    //self.fetchEvents();
+    self.events = mockDataService.getEvents();
 
     evt.emitter.subscribe((event) => {
       console.log('house-video received event', event);
