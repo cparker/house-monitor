@@ -5,7 +5,8 @@ import {Http, Response, Headers} from 'angular2/http'
 import {Injectable} from 'angular2/angular2';
 import m = require('moment');
 
-declare var _:UnderscoreStatic;
+declare
+var _:UnderscoreStatic;
 var moment:moment.MomentStatic;
 moment = (m as any).default || m;
 
@@ -103,8 +104,6 @@ export class DataService {
     return self.http.get(self.eventsAPI)
       .map(r => {
         var res = <any>r;
-        console.log('res is ', res);
-        console.log('res.status', res.status);
 
         if (res.status != 200) {
           throw "error";
