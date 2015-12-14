@@ -28,17 +28,38 @@ export class DataService {
     this.loginAPI = '/house/api/login';
   }
 
-  public getTemp() {
 
-    var self = this;
+  /*
+         {
+           "all": [
+             {
+               "date": "2015-11-27T19:08:52.335Z",
+               "tempF": 45.1
+             },
+             {
+               "date": "2015-11-28T19:09:08.779Z",
+               "tempF": 45.1
+             }],
+           "latest": {
+               "dateStr": "Mon Dec 7th, 7:07 MDT",
+               "date": "2015-11-29T19:09:49.947Z",
+               "tempF": 45.1
+            }
+           }
+       */
 
-    return self.http.get(self.tempAPI)
-      .map(res => (<Response>res).json())
-      .map(x => {
-        var tempJson = <any>x;
+      public getTemp() {
 
-        // this works around an issue with angular2 pipes in safari
-        // https://github.com/angular/angular/issues/3333
+        var self = this;
+
+        return self.http.get(self.tempAPI)
+          .map(res => { (<Response>res).json()} )
+          .map(rawJSON => {
+            // has to be cast in order to work
+            var tempJson:any = <any>rawJSON;
+
+            // this works around an issue with angular2 pipes in safari
+            // https://github.com/angular/angular/issues/3333
         var latestDateMom = moment(tempJson.latest.date);
         var latestDateStr = latestDateMom.format(self.dateFormat);
 
@@ -67,7 +88,16 @@ export class DataService {
     var self = this;
 
     return self.http.get(self.eventsAPI)
-      .map(res => (<Response>res).json())
+      .map(r =>  {
+        var res = <any>r;
+        console.log('res is ',res);
+        console.log('res.status',res.status);
+
+        if (res.status != 200) {
+          throw "error";
+        }
+        return (<any>res).json();
+      })
       .map(x => {
         var eventJson = <any>x;
 
