@@ -30,71 +30,91 @@ export class DataService {
 
 
   /*
-         {
-           "all": [
-             {
-               "date": "2015-11-27T19:08:52.335Z",
-               "tempF": 45.1
-             },
-             {
-               "date": "2015-11-28T19:09:08.779Z",
-               "tempF": 45.1
-             }],
-           "latest": {
-               "dateStr": "Mon Dec 7th, 7:07 MDT",
-               "date": "2015-11-29T19:09:49.947Z",
-               "tempF": 45.1
-            }
-           }
-       */
+   {
+   "all": [
+   {
+   "date": "2015-11-27T19:08:52.335Z",
+   "tempF": 45.1
+   },
+   {
+   "date": "2015-11-28T19:09:08.779Z",
+   "tempF": 45.1
+   }],
+   "latest": {
+   "dateStr": "Mon Dec 7th, 7:07 MDT",
+   "date": "2015-11-29T19:09:49.947Z",
+   "tempF": 45.1
+   }
+   }
+   */
 
-      public getTemp() {
+  public getTemp() {
+    return self.http.get(self.tempAPI)
+      .map(r => {
+        var res = <any>r;
+        if (res.status != 200) {
+          throw res;
+        }
+        return (<any>res).json();
+      })
+      .map(x => {
+        var tempJson = <any>x;
 
         var self = this;
 
         return self.http.get(self.tempAPI)
-          .map(res => { (<Response>res).json()} )
+          .map(res => {
+            (<Response>res).json()
+          })
           .map(rawJSON => {
             // has to be cast in order to work
             var tempJson:any = <any>rawJSON;
 
             // this works around an issue with angular2 pipes in safari
             // https://github.com/angular/angular/issues/3333
-        var latestDateMom = moment(tempJson.latest.date);
-        var latestDateStr = latestDateMom.format(self.dateFormat);
+            var latestDateMom = moment(tempJson.latest.date);
+            var latestDateStr = latestDateMom.format(self.dateFormat);
 
-        return {
-          "latest": {
-            "dateStr": latestDateStr,
-            "date": latestDateMom.toDate(),
-            "tempF": tempJson.latest.tempF.toPrecision(3)
-          },
-          "all": _.map(tempJson.all, function (t:any) {
-            var dateMom = moment(t.date);
-            var dateStr = dateMom.format(self.dateFormat);
             return {
-              "dateStr": dateStr,
-              "date": dateMom.toDate(),
-              "tempF": t.tempF
-            }
-          })
-        };
+              "latest": {
+                "dateStr": latestDateStr,
+                "date": latestDateMom.toDate(),
+                "tempF": tempJson.latest.tempF.toPrecision(3)
+              },
+              "all": _.map(tempJson.all, function (t:any) {
+                var dateMom = moment(t.date);
+                var dateStr = dateMom.format(self.dateFormat);
+                return {
+                  "dateStr": dateStr,
+                  "date": dateMom.toDate(),
+                  "tempF": t.tempF
+                }
+              })
+            };
 
-      });
+          });
 
+      })
   }
 
   public getEvents() {
     var self = this;
 
     return self.http.get(self.eventsAPI)
-      .map(r =>  {
+      .map(r => {
         var res = <any>r;
-        console.log('res is ',res);
-        console.log('res.status',res.status);
+        console.log('res is ', res);
+        console.log('res.status', res.status);
 
         if (res.status != 200) {
           throw "error";
+        }
+
+      })
+      .map(r => {
+        var res = <any>r;
+        if (res.status != 200) {
+          throw res;
         }
         return (<any>res).json();
       })
@@ -107,7 +127,7 @@ export class DataService {
           return e;
         });
 
-        console.log('events',z);
+        console.log('events', z);
         return z;
 
       })
@@ -118,13 +138,10 @@ export class DataService {
     var self = this;
     var headers = new Headers();
     headers.append('Content-Type', 'application/x-www-form-urlencoded');
-    var submit = 'password='+pw;
+    var submit = 'password=' + pw;
 
-    return self.http.post(self.loginAPI, submit, { headers: headers});
+    return self.http.post(self.loginAPI, submit, {headers: headers});
   }
-
-
-
 
 
 }

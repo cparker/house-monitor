@@ -13,3 +13,6 @@ temps.json
 server.log
 .pass
 *.swp
+basic-auth
+upload.log
+motion.log
