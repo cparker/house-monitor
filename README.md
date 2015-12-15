@@ -12,6 +12,10 @@ The client application is an [Angular2](http://www.angular2.com/) app written in
 The server and misc utilities are all written in [Node.js](https://nodejs.org/en/).  The temperature graph is done
 with [google charts](https://developers.google.com/chart/?hl=en) and [nginx](https://www.nginx.com/resources/wiki/) handles http.
 
+## Block Diagram
+![block diagram](http://i.imgur.com/uXWLznZ.png)
+
+
 
 
 
