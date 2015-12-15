@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>House-monitor by cparker</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>House-monitor</h1>
+        <p>Using node.js on the raspberry pi to monitor temperature and video, displayed with angular2 and google charts using typescript</p>
+
+        <p class="view"><a href="https://github.com/cparker/house-monitor">View the Project on GitHub <small>cparker/house-monitor</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/cparker/house-monitor/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/cparker/house-monitor/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/cparker/house-monitor">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a id="house-monitor" class="anchor" href="#house-monitor" aria-hidden="true"><span class="octicon octicon-link"></span></a>house-monitor</h1>
+
+<p>This is the software for a mechanism I built to monitor my house while I'm away.</p>
+
+<p>It runs on a <a href="https://www.raspberrypi.org/products/model-b/">raspberry pi 1</a> and 
+uses a <a href="https://www.sparkfun.com/products/245">one wire temperature sensor</a> and 
+<a href="https://www.sparkfun.com/products/11868">raspberry pi camera</a> .</p>
+
+<p>It uploads the data to a <a href="https://aws.amazon.com/ec2/">cloud service</a> so I can access it from anywhere.</p>
+
+<p>The client application is an <a href="http://www.angular2.com/">Angular2</a> app written in <a href="http://typescriptlang.org">typescript</a>.<br>
+The server and misc utilities are all written in <a href="https://nodejs.org/en/">Node.js</a>.  The temperature graph is done
+with <a href="https://developers.google.com/chart/?hl=en">google charts</a> and <a href="https://www.nginx.com/resources/wiki/">nginx</a> handles http.</p>
+
+<h2>
+<a id="block-diagram" class="anchor" href="#block-diagram" aria-hidden="true"><span class="octicon octicon-link"></span></a>Block Diagram</h2>
+
+<p><img src="http://i.imgur.com/uXWLznZ.png" alt="block diagram"></p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/cparker">cparker</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
