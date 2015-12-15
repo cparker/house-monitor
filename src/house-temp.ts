@@ -59,9 +59,14 @@ export class HouseTemp {
   }
 
   fetchTemp() {
+    console.log('fetching temp');
     let self = this;
     self.dataService.getTemp().subscribe(
-        res => self.temp = res,
+        res => { 
+          console.log('got res from getTemp',res);
+          self.temp = res;
+        }
+        ,
         err => {
         console.log('got error in getTemp', err);
         if ((<any>err).status === 401) {

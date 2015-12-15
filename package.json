@@ -6,7 +6,7 @@
     "start": "gulp dev"
   },
   "dependencies": {
-    "angular2": "^2.0.0-alpha.45",
+    "angular2": "2.0.0-alpha.47",
     "body-parser": "^1.14.1",
     "ds18x20": "^0.2.0",
     "es6-shim": "^0.33.13",

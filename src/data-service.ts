@@ -53,7 +53,12 @@ export class DataService {
         var self = this;
 
         return self.http.get(self.tempAPI)
-          .map(res => { (<Response>res).json()} )
+          .map(res => { 
+            console.log('res is',res);
+            console.log('res.json',(<any>res).json());
+
+            return (<Response>res).json();
+          })
           .map(rawJSON => {
             // has to be cast in order to work
             var tempJson:any = <any>rawJSON;
@@ -103,7 +108,8 @@ export class DataService {
 
         var z = _.map(eventJson, function (e) {
           var dateM = moment((<any>e).eventDate);
-          (<any>e).eventDateStr = dateM.format(self.dateFormat);
+          //(<any>e).eventDateStr = dateM.format(self.dateFormat);
+          (<any>e).eventDateStr = dateM.fromNow();
           return e;
         });
 
