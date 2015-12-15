@@ -22,17 +22,27 @@ module.exports = (function () {
   console.log('', vids.length, 'new videos to re-encode');
   console.log('vids', vids);
 
-  var encodeCommand = '/opt/apps/bin/avconv -y -i $1 -vcodec libx264 -vprofile high -preset slow -b:v 1000k -maxrate 1000k -bufsize 200k -r 4 $2';
+  var encodeCommand = '/opt/apps/bin/avconv -y -i $INPUT -vcodec libx264 -vprofile high -preset slow -b:v 100k -maxrate 100k -bufsize 200k -r 4 $OUTPUT';
+  var animatedGifCommand = "/home/ubuntu/bin/ffmpeg -t 20 -i $INPUT -r 1 -vf 'select=gt(scene\\,0.2),scale=350:-1' -gifflags +transdiff -y $OUTPUT";
 
-  var commandPromises = _.map(vids, function (vid) {
+  var commandPromises = _.flatten(_.map(vids, function (vid) {
 
-    var command = encodeCommand
-      .replace('$1', appDir + newVidsDir + '/' + vid)
-      .replace('$2', appDir + liveVidsDir + '/' + vid.replace(/^(.*?)\.avi$/, '$1.mp4'));
+    var newVidMp4Name = vid.replace(/^(.*?)\.avi$/, '$1.mp4');
+    var newVidGifName = vid.replace(/^(.*?)\.avi$/, '$1.gif');
+
+    var reEncodeCommand = encodeCommand
+      .replace('$INPUT', appDir + newVidsDir + '/' + vid)
+      .replace('$OUTPUT', appDir + liveVidsDir + '/' + newVidMp4Name);
+
+    var aniGifFinalCommand = animatedGifCommand
+      .replace('$INPUT', appDir + liveVidsDir + '/' + newVidMp4Name)
+      .replace('$OUTPUT', appDir + liveVidsDir + '/' + newVidGifName);
+
     return function () {
-      console.log('running ', command);
+      console.log('running 1.', reEncodeCommand);
+      console.log('running 2.', animatedGifCommand);
 
-      return execPromise(command)
+      var reEncodePromise = execPromise(reEncodeCommand)
         .then(function (res) {
           sys.puts(res[0]);
           sys.puts(res[1]);
@@ -42,9 +52,21 @@ module.exports = (function () {
           console.log(err);
           console.log('deleting source file');
           unlink(appDir + newVidsDir + '/' + vid);
-        })
+        });
+
+      var makeGifPromise = execPromise(aniGifFinalCommand)
+        .then(function (res) {
+          sys.puts(res[0]);
+          sys.puts(res[1]);
+        }).catch(function (err) {
+          console.log(err);
+        });
+
+      // returning an array, which gets flattened
+      return [reEncodePromise, makeGifPromise];
+
     };
-  });
+  }));
 
   // now execute the promises sequentially
   commandPromises.reduce(Q.when, Q('initial'));
