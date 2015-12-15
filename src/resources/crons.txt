@@ -1,0 +1,6 @@
+cronjob on cjparker.us
+*/5 * * * *   /usr/sbin/node /opt/house-monitor/re-encode-vids.js &>> /opt/house-monitor/re-encode.log
+
+cronjobs on raspberry pi
+0,15,30,45 * * * *   /bigopt/downloads/node/bin/node /bigopt/house-monitor/recordTemp.js >> /bigopt/house-monitor/recordTemp.log
+1,16,31,46 * * * *   /bigopt/downloads/node/bin/node /bigopt/house-monitor/upload-new-vids.js >> /bigopt/house-monitor/upload.log
