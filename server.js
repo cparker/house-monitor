@@ -8,15 +8,30 @@ var fs = require('fs');
 var _ = require('underscore');
 var moment = require('moment');
 var argv = require('minimist')(process.argv.slice(2));
+var bodyParser = require('body-parser');
+var session = require('express-session');
 
 module.exports = (function () {
+  console.log('argv', argv);
   var port = argv.port || 3000;
   var motionContentDir = argv.motionContentDir || '/opt/house-monitor/live-vids';
-  var imageURLPrefix = argv.imageURLPrefix || 'motionfiles/';
+  var imageURLPrefix = argv.imageURLPrefix != undefined ? argv.imageURLPrefix : 'motionfiles/';
   var mockTemp = argv.mockTemp;
+  var passwordFile = argv.passwordFile || '.pass';
+  var tempsFile = argv.tempsFile || './temps.json';
 
   var tempAPIURL = "/house/api/temp";
   var motionAPIURL = "/house/api/motion";
+  var loginAPIURL = "/house/api/login";
+
+  // read a password file
+  var pw;
+  try {
+     pw = fs.readFileSync(passwordFile, 'utf-8').trim();
+  } catch (err) {
+    console.log('warning, no .pass file, using some crazy default');
+    pw = 's9df7s9df7sd9fs';
+  }
 
   /*
    [
@@ -60,7 +75,7 @@ module.exports = (function () {
     // filter out only the vids
     var vids = _.filter(newFiles, function (fs) {
       var suffix = '.mp4';
-      return fs.name.match(suffix+"$") == suffix;
+      return fs.name.match(suffix + "$") == suffix;
     });
 
     // for each vid, find its corresponding still image (.jpg) and make a pair
@@ -107,37 +122,98 @@ module.exports = (function () {
 
 
   var handleTemp = function (req, res) {
-
-    var tempJSON = JSON.parse(fs.readFileSync('./temps.json', 'utf-8'));
-
-    var mockResponse =
-    {
-      "all": [
-        {
-          "date": "2015-11-30T19:08:52.335Z",
-          "tempF": 45.1
-        },
-        {
-          "date": "2015-11-30T19:09:08.779Z",
-          "tempF": 45.1
-        }
-      ],
-      "latest": {
-        "date": "2015-11-30T19:09:49.947Z",
-        "tempF": 45.1
-      }
-    };
-
-
+    var tempJSON = JSON.parse(fs.readFileSync(tempsFile, 'utf-8'));
     res.json(tempJSON);
   };
 
+  var handleLogin = function (req, res) {
+     console.log('>>>> IN HANDLE LOGIN');
+     console.log('session looks like',req.session);
+
+     if (req.body.password.trim() === pw.trim()) {
+       req.session.isLoggedIn = true;
+       console.log('session is now',req.session);
+       res.sendStatus(200);
+
+     } else {
+        res.sendStatus(401);
+     }
+  };
+
+  var authFilter = function(req,res,next) {
+    console.log('>>>>> AUTH FILTER');
+    var allowedURLs = [
+      '/house/api/login',
+      '/',
+      '/ses'
+    ];
+
+    var allowedPatterns = [
+      '^.*?\.css',
+      '^.*?\.js',
+      '^.*?\.html',
+      '^.*?\.png'
+    ]
+
+    console.log('req path',req.path);
+
+    var allowedByPattern = function() {
+      return _.find(allowedPatterns, function(p) {
+        return req.path.match(new RegExp(p)) != null;
+      });
+    };
+
+    if (_.contains(allowedURLs, req.path) || allowedByPattern()) {
+      console.log('allowed url');
+      next();
+    } else {
+
+      console.log('not allowed url, ses',req.session.isLoggedIn);
+
+      if (req.session.isLoggedIn != true) {
+        console.log('no no no');
+        res.sendStatus(401);
+      } else {
+        console.log('yes yes yes');
+        next();
+      }
+    }
+  };
+
+  var handleTest = function(req, res) {
+    console.log('ses id ', req.session.id);
+    console.log('A session',req.session);
+    req.session.FOO = 1; /// prob doesnt work
+
+    if (!req.session.stuff) {
+        req.session.stuff = {};
+        req.session.stuff['x'] = 0;
+    }
+    req.session.stuff['x'] = req.session.stuff['x'] + 1;
+     
+    console.log('B session',req.session);
+    res.sendStatus(200);
+  };
+
   var app = express();
+  app.use(session({
+    secret: '3jkjsdf89809sdfjkhjk2bb----',
+    saveUninitialized : true,
+    resave : false
+  }));
   app.use(morgan('combined'));
   app.use(express.static('build'));
+  app.use(bodyParser.urlencoded({
+    extended: true
+  }));
+
+  app.use(authFilter);
+
 
   app.get(motionAPIURL, handleMotion);
   app.get(tempAPIURL, handleTemp);
+  app.post(loginAPIURL, handleLogin);
+  app.get('/ses', handleTest);
 
   app.listen(port);
 

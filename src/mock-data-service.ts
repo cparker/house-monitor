@@ -1,12 +1,12 @@
 import {Injectable} from 'angular2/angular2';
 
 @Injectable()
-export class DataService {
+export class MockDataService {
   temp:Object;
-  events:Array;
+  events:Array<any>;
 
   constructor() {
-    console.log('DataService');
+    console.log('mock DataService');
 
     this.temp = {
       "all": [
@@ -20,6 +20,7 @@ export class DataService {
         }
       ],
       "latest": {
+        "dateStr" : "Mon Dec 7th, 7:07 MDT",
         "date": moment("2015-11-29T19:09:49.947Z").toDate(),
         "tempF": 45.1
       }
@@ -29,18 +30,18 @@ export class DataService {
     this.events = [
       {
         eventDate: new Date(),
-        pic: 'images/sampleEventThumb.jpg',
-        vid: 'images/sampleBunny.mp4'
+        pic: 'images/sampleEvent.jpg',
+        vid: 'images/sampleEvent.mp4'
       },
       {
         eventDate: new Date(),
-        pic: 'images/sampleEventThumb.jpg',
-        vid: 'images/sampleBunny.mp4'
+        pic: 'images/sampleEvent.jpg',
+        vid: 'images/sampleEvent.mp4'
       },
       {
         eventDate: new Date(),
-        pic: 'images/sampleEventThumb.jpg',
-        vid: 'images/sampleBunny.mp4'
+        pic: 'images/sampleEvent.jpg',
+        vid: 'images/sampleEvent.mp4'
       }
     ]
   }

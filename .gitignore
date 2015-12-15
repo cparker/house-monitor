@@ -14,3 +14,5 @@ server.log
 basic-auth
 upload.log
 motion.log
+.pass
+*.swp

@@ -6,16 +6,21 @@
     "start": "gulp dev"
   },
   "dependencies": {
-    "angular2": "2.0.0-alpha.46",
+    "angular2": "2.0.0-alpha.47",
+    "body-parser": "^1.14.1",
     "ds18x20": "^0.2.0",
+    "es6-shim": "^0.33.13",
     "express": "^4.13.3",
+    "express-session": "^1.12.1",
+    "gulp-typescript": "^2.10.0",
     "minimist": "^1.2.0",
     "moment": "^2.10.6",
     "morgan": "^1.6.1",
+    "multer": "^1.1.0",
+    "parseurl": "^1.3.0",
     "q": "^1.4.1",
     "reflect-metadata": "0.1.1",
     "systemjs": "0.18.17",
-    "traceur": "0.0.92",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
@@ -24,7 +29,6 @@
     "gulp-rename": "1.2.2",
     "gulp-sass": "^2.1.0",
     "gulp-traceur": "0.17.1",
-    "gulp-tsc": "^1.1.4",
     "gulp-webserver": "0.9.1"
   },
   "author": "Christian Parker (cp@cjparker.us)",
