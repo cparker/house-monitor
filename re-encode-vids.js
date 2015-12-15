@@ -22,7 +22,7 @@ module.exports = (function () {
   console.log('', vids.length, 'new videos to re-encode');
   console.log('vids', vids);
 
-  var encodeCommand = 'avconv -y -i $1 -vcodec libx264 -vprofile high -preset slow -b:v 1000k -maxrate 1000k -bufsize 200k -r 4 $2';
+  var encodeCommand = '/opt/apps/bin/avconv -y -i $1 -vcodec libx264 -vprofile high -preset slow -b:v 1000k -maxrate 1000k -bufsize 200k -r 4 $2';
 
   var commandPromises = _.map(vids, function (vid) {
 

@@ -26,9 +26,6 @@ moment = (m as any).default || m;
   template: `<div class="chart" id="chartdiv"></div>`,
 
   styles: [`
-    .chart {
-      width: 50%;
-    }
   `]
 })
 
@@ -111,7 +108,8 @@ export class TempChart implements OnInit, AfterContentInit, AfterViewInit {
         legend : { position : 'in' },
         chartArea : {
           left : 30,
-          top :10
+          top :10,
+          width:  '100%'
         },
         title: 'Temperature over last day',
         curveType: 'function',
