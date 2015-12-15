@@ -38,11 +38,11 @@ module.exports = (function () {
       .replace('$INPUT', appDir + liveVidsDir + '/' + newVidMp4Name)
       .replace('$OUTPUT', appDir + liveVidsDir + '/' + newVidGifName);
 
-    return function () {
-      console.log('running 1.', reEncodeCommand);
-      console.log('running 2.', animatedGifCommand);
+    console.log('running 1.', reEncodeCommand);
+    console.log('running 2.', animatedGifCommand);
 
-      var reEncodePromise = execPromise(reEncodeCommand)
+    var reEncodeFunc = function () {
+      return execPromise(reEncodeCommand)
         .then(function (res) {
           sys.puts(res[0]);
           sys.puts(res[1]);
@@ -53,19 +53,21 @@ module.exports = (function () {
           console.log('deleting source file');
           unlink(appDir + newVidsDir + '/' + vid);
         });
-
-      var makeGifPromise = execPromise(aniGifFinalCommand)
-        .then(function (res) {
-          sys.puts(res[0]);
-          sys.puts(res[1]);
-        }).catch(function (err) {
-          console.log(err);
-        });
-
-      // returning an array, which gets flattened
-      return [reEncodePromise, makeGifPromise];
-
     };
+
+    var makeGifFunc = function () {
+      return execPromise(aniGifFinalCommand)
+        .then(function (res) {
+          sys.puts(res[0]);
+          sys.puts(res[1]);
+        }).catch(function (err) {
+          console.log(err);
+        });
+    };
+
+    // returning an array, which gets flattened
+    return [reEncodeFunc, makeGifFunc];
+
   }));
 
   // now execute the promises sequentially
