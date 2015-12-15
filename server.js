@@ -78,11 +78,11 @@ module.exports = (function () {
       return fs.name.match(suffix + "$") == suffix;
     });
 
-    // for each vid, find its corresponding still image (.jpg) and make a pair
+    // for each vid, find its corresponding still image (.gif) and make a pair
     var pairs = _.chain(vids)
       .map(function (vid) {
         var noExtention = vid.name.substr(0, vid.name.lastIndexOf('.'));
-        var picFilename = noExtention + '.jpg';
+        var picFilename = noExtention + '.gif';
         // confirm that we have the still
         var hasPic = _.find(newFiles, function (fs) {
           return fs.name == picFilename;
@@ -127,12 +127,9 @@ module.exports = (function () {
   };
 
   var handleLogin = function (req, res) {
-     console.log('>>>> IN HANDLE LOGIN');
-     console.log('session looks like',req.session);
 
      if (req.body.password.trim() === pw.trim()) {
        req.session.isLoggedIn = true;
-       console.log('session is now',req.session);
        res.sendStatus(200);
 
      } else {
@@ -141,7 +138,6 @@ module.exports = (function () {
   };
 
   var authFilter = function(req,res,next) {
-    console.log('>>>>> AUTH FILTER');
     var allowedURLs = [
       '/house/api/login',
       '/',
@@ -153,7 +149,7 @@ module.exports = (function () {
       '^.*?\.js',
       '^.*?\.html',
       '^.*?\.png'
-    ]
+    ];
 
     console.log('req path',req.path);
 
@@ -164,25 +160,19 @@ module.exports = (function () {
     };
 
     if (_.contains(allowedURLs, req.path) || allowedByPattern()) {
-      console.log('allowed url');
       next();
     } else {
 
-      console.log('not allowed url, ses',req.session.isLoggedIn);
 
       if (req.session.isLoggedIn != true) {
-        console.log('no no no');
         res.sendStatus(401);
       } else {
-        console.log('yes yes yes');
         next();
       }
     }
   };
 
   var handleTest = function(req, res) {
-    console.log('ses id ', req.session.id);
-    console.log('A session',req.session);
     req.session.FOO = 1; /// prob doesnt work
 
     if (!req.session.stuff) {
@@ -190,8 +180,7 @@ module.exports = (function () {
         req.session.stuff['x'] = 0;
     }
     req.session.stuff['x'] = req.session.stuff['x'] + 1;
-     
-    console.log('B session',req.session);
+
     res.sendStatus(200);
   };
 
