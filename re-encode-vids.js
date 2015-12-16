@@ -38,10 +38,9 @@ module.exports = (function () {
       .replace('$INPUT', appDir + liveVidsDir + '/' + newVidMp4Name)
       .replace('$OUTPUT', appDir + liveVidsDir + '/' + newVidGifName);
 
-    console.log('running 1.', reEncodeCommand);
-    console.log('running 2.', animatedGifCommand);
 
     var reEncodeFunc = function () {
+      console.log('running 1.', reEncodeCommand);
       return execPromise(reEncodeCommand)
         .then(function (res) {
           sys.puts(res[0]);
@@ -56,6 +55,7 @@ module.exports = (function () {
     };
 
     var makeGifFunc = function () {
+      console.log('running 2.', aniGifFinalCommand);
       return execPromise(aniGifFinalCommand)
         .then(function (res) {
           sys.puts(res[0]);
