@@ -48,23 +48,20 @@ export class DataService {
            }
        */
 
-      public getTemp() {
+  public getTemp() {
 
-        var self = this;
+    var self = this;
 
-        return self.http.get(self.tempAPI)
-          .map(res => { 
-            console.log('res is',res);
-            console.log('res.json',(<any>res).json());
+    return self.http.get(self.tempAPI)
+      .map(res => {
+        return (<Response>res).json();
+      })
+      .map(rawJSON => {
+        // has to be cast in order to work
+        var tempJson:any = <any>rawJSON;
 
-            return (<Response>res).json();
-          })
-          .map(rawJSON => {
-            // has to be cast in order to work
-            var tempJson:any = <any>rawJSON;
-
-            // this works around an issue with angular2 pipes in safari
-            // https://github.com/angular/angular/issues/3333
+        // this works around an issue with angular2 pipes in safari
+        // https://github.com/angular/angular/issues/3333
         var latestDateMom = moment(tempJson.latest.date);
         var latestDateStr = latestDateMom.format(self.dateFormat);
 
@@ -93,10 +90,8 @@ export class DataService {
     var self = this;
 
     return self.http.get(self.eventsAPI)
-      .map(r =>  {
+      .map(r => {
         var res = <any>r;
-        console.log('res is ',res);
-        console.log('res.status',res.status);
 
         if (res.status != 200) {
           throw "error";
@@ -106,15 +101,11 @@ export class DataService {
       .map(x => {
         var eventJson = <any>x;
 
-        var z = _.map(eventJson, function (e) {
+        return _.map(eventJson, function (e) {
           var dateM = moment((<any>e).eventDate);
-          //(<any>e).eventDateStr = dateM.format(self.dateFormat);
           (<any>e).eventDateStr = dateM.fromNow();
           return e;
         });
-
-        console.log('events',z);
-        return z;
 
       })
   }
@@ -124,13 +115,10 @@ export class DataService {
     var self = this;
     var headers = new Headers();
     headers.append('Content-Type', 'application/x-www-form-urlencoded');
-    var submit = 'password='+pw;
+    var submit = 'password=' + pw;
 
-    return self.http.post(self.loginAPI, submit, { headers: headers});
+    return self.http.post(self.loginAPI, submit, {headers: headers});
   }
-
-
-
 
 
 }

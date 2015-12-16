@@ -37,7 +37,7 @@ export class HouseTemp {
   dataService:DataService;
   eventService:EventService;
 
-  constructor(dataService:DataService, evt:EventService,mockDataService:MockDataService) {
+  constructor(dataService:DataService, evt:EventService, mockDataService:MockDataService) {
     console.log('house temp constructor');
     let self = this;
     self.dataService = dataService;
@@ -62,11 +62,11 @@ export class HouseTemp {
     console.log('fetching temp');
     let self = this;
     self.dataService.getTemp().subscribe(
-        res => { 
-          console.log('got res from getTemp',res);
-          self.temp = res;
-        }
-        ,
+        res => {
+        console.log('got res from getTemp', res);
+        self.temp = res;
+      }
+      ,
         err => {
         console.log('got error in getTemp', err);
         if ((<any>err).status === 401) {
