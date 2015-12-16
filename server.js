@@ -15,14 +15,14 @@ module.exports = (function () {
   console.log('argv', argv);
   var port = argv.port || 3000;
   var motionContentDir = argv.motionContentDir || '/opt/house-monitor/live-vids';
-  var imageURLPrefix = argv.imageURLPrefix != undefined ? argv.imageURLPrefix : 'motionfiles/';
+  var imageURLPrefix = argv.imageURLPrefix !== undefined ? argv.imageURLPrefix : 'motionfiles/';
   var mockTemp = argv.mockTemp;
   var passwordFile = argv.passwordFile || '.pass';
   var tempsFile = argv.tempsFile || './temps.json';
 
-  var tempAPIURL = "/house/api/temp";
-  var motionAPIURL = "/house/api/motion";
-  var loginAPIURL = "/house/api/login";
+  var tempAPIURL = '/house/api/temp';
+  var motionAPIURL = '/house/api/motion';
+  var loginAPIURL = '/house/api/login';
 
   // read a password file
   var pw;
@@ -64,7 +64,7 @@ module.exports = (function () {
         url: imageURLPrefix + f,
         name: f,
         stat: stat
-      }
+      };
     });
 
 
@@ -75,7 +75,7 @@ module.exports = (function () {
     // filter out only the vids
     var vids = _.filter(newFiles, function (fs) {
       var suffix = '.mp4';
-      return fs.name.match(suffix + "$") == suffix;
+      return fs.name.match(suffix + '$') === suffix;
     });
 
     // for each vid, find its corresponding still image (.gif) and make a pair
@@ -85,32 +85,32 @@ module.exports = (function () {
         var picFilename = noExtention + '.gif';
         // confirm that we have the still
         var hasPic = _.find(newFiles, function (fs) {
-          return fs.name == picFilename;
+          return fs.name === picFilename;
         });
 
         if (hasPic) {
           return {
-            "eventDate": moment(vid.stat.mtime),
-            "pic": imageURLPrefix + picFilename,
-            "vid": imageURLPrefix + vid.name
-          }
+            'eventDate': moment(vid.stat.mtime),
+            'pic': imageURLPrefix + picFilename,
+            'vid': imageURLPrefix + vid.name
+          };
         } else {
           console.log('skipping ', vid.name, ' because we couldnt find a matching pic', picFilename);
           return undefined;
         }
       })
       .filter(function (x) {
-        return x != undefined;
+        return x !== undefined;
       })
       .sortBy(function (pair) {
         return pair.eventDate.toDate();
       })
       .map(function (pair) {
         return {
-          "eventDate": pair.eventDate.format(),
-          "pic": pair.pic,
-          "vid": pair.vid
-        }
+          'eventDate': pair.eventDate.format(),
+          'pic': pair.pic,
+          'vid': pair.vid
+        };
       })
       .value()
       .reverse();
@@ -155,7 +155,7 @@ module.exports = (function () {
 
     var allowedByPattern = function() {
       return _.find(allowedPatterns, function(p) {
-        return req.path.match(new RegExp(p)) != null;
+        return req.path.match(new RegExp(p)) !== null;
       });
     };
 
@@ -164,7 +164,7 @@ module.exports = (function () {
     } else {
 
 
-      if (req.session.isLoggedIn != true) {
+      if (req.session.isLoggedIn !== true) {
         res.sendStatus(401);
       } else {
         next();
@@ -177,9 +177,9 @@ module.exports = (function () {
 
     if (!req.session.stuff) {
         req.session.stuff = {};
-        req.session.stuff['x'] = 0;
+        req.session.stuff.x = 0;
     }
-    req.session.stuff['x'] = req.session.stuff['x'] + 1;
+    req.session.stuff.x = req.session.stuff.x + 1;
 
     res.sendStatus(200);
   };

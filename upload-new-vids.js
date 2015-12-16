@@ -34,10 +34,10 @@ module.exports = (function () {
         var lastCheckJSON = JSON.parse(fs.readFileSync(lastCheckDir + '/' + lastCheckFile, {encoding: 'utf-8'}));
         lastCheck = {
           date: new Date(lastCheckJSON.date)
-        }
+        };
       } catch (err) {
         console.log('looks like a first run ', err);
-        lastCheck = {date: new Date(0)}
+        lastCheck = {date: new Date(0)};
       }
       console.log('looking for files written since ', lastCheck);
 
@@ -77,11 +77,11 @@ module.exports = (function () {
         .replace('$4', tempUploadLocation);
 
       var movies = _.filter(newFiles, function (f) {
-        return f.name.match('.avi' + '$') == '.avi';
+        return f.name.match('.avi' + '$') === '.avi';
       });
 
       var pics = _.filter(newFiles, function (f) {
-        return f.name.match('.jpg' + '$') == '.jpg';
+        return f.name.match('.jpg' + '$') === '.jpg';
       });
 
       var logExecIO = function (io) {
@@ -101,7 +101,7 @@ module.exports = (function () {
 
           return execPromise(command)
             .then(logExecIO).catch(logExecErr);
-        }
+        };
       });
 
       // PICS
@@ -111,7 +111,7 @@ module.exports = (function () {
           console.log('running ', command);
           return execPromise(command)
             .then(logExecIO).catch(logExecErr);
-        }
+        };
       });
 
       // TEMP
@@ -130,10 +130,10 @@ module.exports = (function () {
           })
           .catch(function (err) {
             console.log('error writing lastCheck', err);
-          })
+          });
       };
 
-      var allPromises = movieUploadPromises.concat(picUploadPromises).concat(tempUploadPromise).concat([writeLastCheck])
+      var allPromises = movieUploadPromises.concat(picUploadPromises).concat(tempUploadPromise).concat([writeLastCheck]);
       allPromises.reduce(Q.when, Q('init'));
 
 
