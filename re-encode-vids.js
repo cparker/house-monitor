@@ -25,7 +25,7 @@ module.exports = (function () {
   console.log('vids', vids);
 
   var encodeCommand = '/opt/apps/bin/avconv -y -i $INPUT -vcodec libx264 -vprofile high -preset slow -b:v 100k -maxrate 100k -bufsize 200k -r 4 $OUTPUT';
-  var animatedGifCommand = "/home/ubuntu/bin/ffmpeg -t 20 -i $INPUT -r 1 -vf 'select=gt(scene\\,0.2),scale=350:-1' -gifflags +transdiff -y $OUTPUT";
+  var animatedGifCommand = "/home/ubuntu/bin/ffmpeg -t 20 -i $INPUT -r 1 -vf 'select=gt(scene\\,0.1),scale=350:-1' -gifflags +transdiff -y $OUTPUT";
 
   var commandPromises = _.flatten(_.map(vids, function (vid) {
 
