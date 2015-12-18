@@ -30,6 +30,8 @@ module.exports = (function () {
 
       var lastCheck;
 
+      console.log('starting',new Date());
+
       try {
         var lastCheckJSON = JSON.parse(fs.readFileSync(lastCheckDir + '/' + lastCheckFile, {encoding: 'utf-8'}));
         lastCheck = {
@@ -77,11 +79,11 @@ module.exports = (function () {
         .replace('$4', tempUploadLocation);
 
       var movies = _.filter(newFiles, function (f) {
-        return f.name.match('.avi' + '$') === '.avi';
+        return f.name.match('.avi' + '$').toString() === '.avi';
       });
 
       var pics = _.filter(newFiles, function (f) {
-        return f.name.match('.jpg' + '$') === '.jpg';
+        return f.name.match('.jpg' + '$').toString() === '.jpg';
       });
 
       var logExecIO = function (io) {
@@ -133,7 +135,10 @@ module.exports = (function () {
           });
       };
 
-      var allPromises = movieUploadPromises.concat(picUploadPromises).concat(tempUploadPromise).concat([writeLastCheck]);
+      var allPromises = movieUploadPromises.concat(picUploadPromises).concat([tempUploadPromise]).concat([writeLastCheck]);
+      console.log('mov promises',movieUploadPromises.length);
+      console.log('pic promises',picUploadPromises.length);
+      console.log('all promises',allPromises.length);
       allPromises.reduce(Q.when, Q('init'));
 
 

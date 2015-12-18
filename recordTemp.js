@@ -75,7 +75,7 @@ module.exports = (function () {
       return temp.getTempF();
     })
     .then(function (t) {
-      var tempF = t.toPrecision(3);
+      var tempF = Number(t.toPrecision(3));
       alertTemp(tempF);
       var temp = {
         date: new Date(),

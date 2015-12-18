@@ -17,6 +17,8 @@ module.exports = (function () {
   var unlink = Q.nfbind(fs.unlink);
   var execPromise = Q.denodeify(exec);
 
+  console.log('starting',new Date());
+
   // look for new vids uploaded
   var vids = fs.readdirSync(appDir + newVidsDir);
   console.log('', vids.length, 'new videos to re-encode');

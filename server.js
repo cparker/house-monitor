@@ -75,7 +75,7 @@ module.exports = (function () {
     // filter out only the vids
     var vids = _.filter(newFiles, function (fs) {
       var suffix = '.mp4';
-      return fs.name.match(suffix + '$') === suffix;
+      return fs.name.match(suffix + '$').toString() === suffix;
     });
 
     // for each vid, find its corresponding still image (.gif) and make a pair
