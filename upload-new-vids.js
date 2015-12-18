@@ -79,11 +79,11 @@ module.exports = (function () {
         .replace('$4', tempUploadLocation);
 
       var movies = _.filter(newFiles, function (f) {
-        return f.name.match('.avi' + '$').toString() === '.avi';
+        return f.name.match('.avi' + '$') == '.avi';
       });
 
       var pics = _.filter(newFiles, function (f) {
-        return f.name.match('.jpg' + '$').toString() === '.jpg';
+        return f.name.match('.jpg' + '$') == '.jpg';
       });
 
       var logExecIO = function (io) {
