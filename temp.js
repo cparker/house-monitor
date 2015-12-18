@@ -31,7 +31,7 @@ module.exports = (function () {
       })
       .fail(function (err) {
         console.log('error loading driver', err);
-      })
+      });
   };
 
   var getTempF = function (mockTemp) {
@@ -59,7 +59,7 @@ module.exports = (function () {
       })
       .catch(function (err) {
         console.log('caught exception on getTemp', err);
-      })
+      });
 
   };
 
@@ -73,7 +73,7 @@ module.exports = (function () {
 
   return {
     getTempF: getTempF
-  }
+  };
 
 })();
 

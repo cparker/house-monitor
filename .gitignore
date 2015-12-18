@@ -15,4 +15,5 @@ basic-auth
 upload.log
 motion.log
 .pass
+.emailpass
 *.swp
