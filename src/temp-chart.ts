@@ -10,10 +10,8 @@ import {MockTemps} from './mocktemps';
 
 import m = require('moment');
 
-declare
-var google;
-declare
-var _:UnderscoreStatic;
+declare var google;
+declare var _:UnderscoreStatic;
 
 var moment:moment.MomentStatic;
 moment = (m as any).default || m;
