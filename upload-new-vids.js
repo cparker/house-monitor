@@ -24,117 +24,141 @@ module.exports = (function () {
   var tempsDir = argv.tempsDir || '/bigopt/house-monitor';
   var tempsFilename = 'temps.json';
   var tempUploadLocation = argv.tempUploadLocation || '/opt/house-monitor';
+  var periodicSnapshotFilename = argv.periodicSnapshotFilename || 'lastsnap.jpg';
 
   var motionFiles = fs.readdirSync(motionContentDir);
 
 
-      var lastCheck;
+  var lastCheck;
 
-      try {
-        var lastCheckJSON = JSON.parse(fs.readFileSync(lastCheckDir + '/' + lastCheckFile, {encoding: 'utf-8'}));
-        lastCheck = {
-          date: new Date(lastCheckJSON.date)
-        };
-      } catch (err) {
-        console.log('looks like a first run ', err);
-        lastCheck = {date: new Date(0)};
-      }
-      console.log('looking for files written since ', lastCheck);
+  try {
+    var lastCheckJSON = JSON.parse(fs.readFileSync(lastCheckDir + '/' + lastCheckFile, {encoding: 'utf-8'}));
+    lastCheck = {
+      date: new Date(lastCheckJSON.date)
+    };
+  } catch (err) {
+    console.log('looks like a first run ', err);
+    lastCheck = {date: new Date(0)};
+  }
+  console.log('looking for files written since ', lastCheck);
 
-      var motionFileStats = _.map(motionFiles, function (file) {
-        var fd = fs.openSync(motionContentDir + '/' + file, 'r');
-        var stat = fs.fstatSync(fd);
-        fs.closeSync(fd);
-        return {
-          name: motionContentDir + '/' + file,
-          stat: stat
-        };
+  var motionFileStats = _.map(motionFiles, function (file) {
+    var fd = fs.openSync(motionContentDir + '/' + file, 'r');
+    var stat = fs.fstatSync(fd);
+    fs.closeSync(fd);
+    return {
+      name: motionContentDir + '/' + file,
+      stat: stat
+    };
+  });
+
+  // which files are newer than since we last checked
+  var newFiles = _.filter(motionFileStats, function (fileStat) {
+    if (fileStat.stat.ctime > lastCheck.date) {
+      console.log('found a new file ', fileStat.name);
+      return true;
+    }
+  });
+
+  var movieUploadCommand = '/usr/bin/scp -p -i $1 $2 $3:$4'
+    .replace('$1', ec2key)
+    .replace('$3', ec2UserAndHost)
+    .replace('$4', movieUploadLocation);
+
+  var picUploadCommand = '/usr/bin/scp -p -i $1 $2 $3:$4'
+    .replace('$1', ec2key)
+    .replace('$3', ec2UserAndHost)
+    .replace('$4', picUploadLocation);
+
+  // uploads temps.json file to cloud
+  var tempUploadCommand = '/usr/bin/scp -p -i $1 $2 $3:$4'
+    .replace('$1', ec2key)
+    .replace('$2', tempsDir + '/' + tempsFilename)
+    .replace('$3', ec2UserAndHost)
+    .replace('$4', tempUploadLocation);
+
+  /*
+   # Note: A symbolic link called lastsnap.jpg created in the target_dir will always
+   # point to the latest snapshot, unless snapshot_filename is exactly 'lastsnap'
+   */
+  var uploadSnapshotCommand = '/usr/bin/scp -p -i $1 $2 $3:$4'
+    .replace('$1', ec2key)
+    .replace('$2', motionContentDir + '/' + periodicSnapshotFilename)
+    .replace('$3', ec2UserAndHost)
+    .replace('$4', picUploadLocation);
+
+  var movies = _.filter(newFiles, function (f) {
+    return f.name.match('.avi' + '$') === '.avi';
+  });
+
+  var pics = _.filter(newFiles, function (f) {
+    return f.name.match('.jpg' + '$') === '.jpg';
+  });
+
+  var logExecIO = function (io) {
+    console.log('STDIN: ', io[0]);
+    console.log('STDERR: ', io[1]);
+  };
+
+  var logExecErr = function (err) {
+    console.log('error during exec', err);
+  };
+
+  // MOVIES
+  var movieUploadPromises = _.map(movies, function (fileToUpload) {
+    return function () {
+      var command = movieUploadCommand.replace('$2', fileToUpload.name);
+      console.log('running', command);
+
+      return execPromise(command)
+        .then(logExecIO).catch(logExecErr);
+    };
+  });
+
+  // PICS
+  var picUploadPromises = _.map(pics, function (fileToUpload) {
+    return function () {
+      var command = picUploadCommand.replace('$2', fileToUpload.name);
+      console.log('running ', command);
+      return execPromise(command)
+        .then(logExecIO).catch(logExecErr);
+    };
+  });
+
+  // SNAPSHOT
+  var snapshotUploadPromise = function () {
+    console.log('uploading periodic snapshot');
+    return execPromise(uploadSnapshotCommand)
+      .then(logExecIO)
+      .catch(logExecErr)
+  };
+
+
+  // TEMP
+  var tempUploadPromise = function () {
+    console.log('uploading temperature readings');
+    return execPromise(tempUploadCommand)
+      .then(logExecIO)
+      .catch(logExecErr);
+  };
+
+  var writeLastCheck = function () {
+    console.log('finishing up');
+    return fs.writeFile(lastCheckDir + '/' + lastCheckFile, JSON.stringify({date: new Date()}))
+      .then(function () {
+
+      })
+      .catch(function (err) {
+        console.log('error writing lastCheck', err);
       });
+  };
 
-      // which files are newer than since we last checked
-      var newFiles = _.filter(motionFileStats, function (fileStat) {
-        if (fileStat.stat.ctime > lastCheck.date) {
-          console.log('found a new file ', fileStat.name);
-          return true;
-        }
-      });
-
-      var movieUploadCommand = '/usr/bin/scp -p -i $1 $2 $3:$4'
-        .replace('$1', ec2key)
-        .replace('$3', ec2UserAndHost)
-        .replace('$4', movieUploadLocation);
-
-      var picUploadCommand = '/usr/bin/scp -p -i $1 $2 $3:$4'
-        .replace('$1', ec2key)
-        .replace('$3', ec2UserAndHost)
-        .replace('$4', picUploadLocation);
-
-      // uploads temps.json file to cloud
-      var tempUploadCommand = '/usr/bin/scp -p -i $1 $2 $3:$4'
-        .replace('$1', ec2key)
-        .replace('$2', tempsDir + '/' + tempsFilename)
-        .replace('$3', ec2UserAndHost)
-        .replace('$4', tempUploadLocation);
-
-      var movies = _.filter(newFiles, function (f) {
-        return f.name.match('.avi' + '$') === '.avi';
-      });
-
-      var pics = _.filter(newFiles, function (f) {
-        return f.name.match('.jpg' + '$') === '.jpg';
-      });
-
-      var logExecIO = function (io) {
-        console.log('STDIN: ', io[0]);
-        console.log('STDERR: ', io[1]);
-      };
-
-      var logExecErr = function (err) {
-        console.log('error during exec', err);
-      };
-
-      // MOVIES
-      var movieUploadPromises = _.map(movies, function (fileToUpload) {
-        return function () {
-          var command = movieUploadCommand.replace('$2', fileToUpload.name);
-          console.log('running', command);
-
-          return execPromise(command)
-            .then(logExecIO).catch(logExecErr);
-        };
-      });
-
-      // PICS
-      var picUploadPromises = _.map(pics, function (fileToUpload) {
-        return function () {
-          var command = picUploadCommand.replace('$2', fileToUpload.name);
-          console.log('running ', command);
-          return execPromise(command)
-            .then(logExecIO).catch(logExecErr);
-        };
-      });
-
-      // TEMP
-      var tempUploadPromise = function () {
-        console.log('uploading temperature readings');
-        return execPromise(tempUploadCommand)
-          .then(logExecIO)
-          .catch(logExecErr);
-      };
-
-      var writeLastCheck = function () {
-        console.log('finishing up');
-        return fs.writeFile(lastCheckDir + '/' + lastCheckFile, JSON.stringify({date: new Date()}))
-          .then(function () {
-
-          })
-          .catch(function (err) {
-            console.log('error writing lastCheck', err);
-          });
-      };
-
-      var allPromises = movieUploadPromises.concat(picUploadPromises).concat(tempUploadPromise).concat([writeLastCheck]);
-      allPromises.reduce(Q.when, Q('init'));
+  var allPromises = movieUploadPromises
+    .concat(picUploadPromises)
+    .concat(tempUploadPromise)
+    .concat([writeLastCheck])
+    .concat([snapshotUploadPromise]);
+  allPromises.reduce(Q.when, Q('init'));
 
 
 })();
