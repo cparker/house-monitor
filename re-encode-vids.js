@@ -17,13 +17,15 @@ module.exports = (function () {
   var unlink = Q.nfbind(fs.unlink);
   var execPromise = Q.denodeify(exec);
 
+  console.log('starting',new Date());
+
   // look for new vids uploaded
   var vids = fs.readdirSync(appDir + newVidsDir);
   console.log('', vids.length, 'new videos to re-encode');
   console.log('vids', vids);
 
   var encodeCommand = '/opt/apps/bin/avconv -y -i $INPUT -vcodec libx264 -vprofile high -preset slow -b:v 100k -maxrate 100k -bufsize 200k -r 4 $OUTPUT';
-  var animatedGifCommand = "/home/ubuntu/bin/ffmpeg -t 20 -i $INPUT -r 1 -vf 'select=gt(scene\\,0.2),scale=350:-1' -gifflags +transdiff -y $OUTPUT";
+  var animatedGifCommand = "/home/ubuntu/bin/ffmpeg -t 20 -i $INPUT -r 1 -vf 'select=gt(scene\\,0.1),scale=350:-1' -gifflags +transdiff -y $OUTPUT";
   var simpleOneFrameCommand = "/home/ubuntu/bin/ffmpeg -y -i $INPUT -vframes 1 -vf 'scale=350:-1' $OUTPUT";
 
   var logExecIO = function (io) {
