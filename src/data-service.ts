@@ -1,7 +1,7 @@
 /// <reference path="../typings/underscore/underscore.d.ts" />
 /// <reference path="../typings/moment/moment.d.ts" />
 
-import {Http, Response, Headers} from 'angular2/http'
+import {Http, Response, Headers, MockBackend} from 'angular2/http'
 import {Injectable} from 'angular2/angular2';
 import m = require('moment');
 
