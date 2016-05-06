@@ -88,11 +88,11 @@ module.exports = (function () {
     .replace('$4', picUploadLocation);
 
   var movies = _.filter(newFiles, function (f) {
-    return f.name.match('.avi' + '$') === '.avi';
+    return f.name.endsWith('.avi');
   });
 
   var pics = _.filter(newFiles, function (f) {
-    return f.name.match('.jpg' + '$') === '.jpg';
+    return f.name.endsWith('.jpg');
   });
 
   var logExecIO = function (io) {
