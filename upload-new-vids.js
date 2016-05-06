@@ -14,14 +14,14 @@ module.exports = (function () {
   var readdir = Q.nfbind(fs.readdir);
   var execPromise = Q.nfbind(exec);
 
-  var motionContentDir = argv.motionContentDir || '/media/iomega/motion';
-  var lastCheckDir = argv.lastCheckDir || '/bigopt/house-monitor';
+  var motionContentDir = argv.motionContentDir || '/opt/house-monitor/motion-files';
+  var lastCheckDir = argv.lastCheckDir || '/opt/house-monitor';
   var lastCheckFile = 'lastCheck.json';
-  var ec2key = argv.ec2key || '/bigopt/house-monitor/ec2-march-2014.pem';
+  var ec2key = argv.ec2key || '/opt/house-monitor/ec2-march-2014.pem';
   var ec2UserAndHost = argv.ec2UserAndHost || 'ubuntu@cjparker.us';
   var movieUploadLocation = argv.movieUploadLocation || '/opt/house-monitor/new-vids/';
   var picUploadLocation = argv.picUploadLocation || '/opt/house-monitor/live-vids/';
-  var tempsDir = argv.tempsDir || '/bigopt/house-monitor';
+  var tempsDir = argv.tempsDir || '/opt/house-monitor/house-monitor';
   var tempsFilename = 'temps.json';
   var tempUploadLocation = argv.tempUploadLocation || '/opt/house-monitor';
   var periodicSnapshotFilename = argv.periodicSnapshotFilename || 'lastsnap.jpg';
@@ -134,6 +134,7 @@ module.exports = (function () {
   };
 
 
+  /* removing temperature, not needed here
   // TEMP
   var tempUploadPromise = function () {
     console.log('uploading temperature readings');
@@ -141,6 +142,8 @@ module.exports = (function () {
       .then(logExecIO)
       .catch(logExecErr);
   };
+
+  */
 
   var writeLastCheck = function () {
     console.log('finishing up');
@@ -155,7 +158,6 @@ module.exports = (function () {
 
   var allPromises = movieUploadPromises
     .concat(picUploadPromises)
-    .concat(tempUploadPromise)
     .concat([writeLastCheck])
     .concat([snapshotUploadPromise]);
   allPromises.reduce(Q.when, Q('init'));
