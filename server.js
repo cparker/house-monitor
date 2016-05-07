@@ -9,6 +9,7 @@ var _ = require('underscore');
 var moment = require('moment');
 var argv = require('minimist')(process.argv.slice(2));
 var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
 var session = require('express-session');
 
 module.exports = (function () {
@@ -23,6 +24,9 @@ module.exports = (function () {
   var tempAPIURL = '/house/api/temp';
   var motionAPIURL = '/house/api/motion';
   var loginAPIURL = '/house/api/login';
+
+  var rememberMeCookieName = 'parkerscolorado-rememberme';
+  var rememberMeCookieValue = 'parker-dahlia-7275-housemon';
 
   // read a password file
   var pw;
@@ -127,9 +131,11 @@ module.exports = (function () {
   };
 
   var handleLogin = function (req, res) {
+     console.log('handleLogin cookies ', req.cookies);
 
      if (req.body.password.trim() === pw.trim()) {
        req.session.isLoggedIn = true;
+       res.cookie(rememberMeCookieName, rememberMeCookieValue, {maxAge:1000 * 60 * 60 * 24 * 90});
        res.sendStatus(200);
 
      } else {
@@ -138,6 +144,14 @@ module.exports = (function () {
   };
 
   var authFilter = function(req,res,next) {
+    console.log('authFilter cookies ', req.cookies);
+
+    if (req.cookies[rememberMeCookieName] === rememberMeCookieValue) {
+       console.log('allowing by rememberme');
+       req.session.isLoggedIn = true;
+       next();
+    }
+
     var allowedURLs = [
       '/house/api/login',
       '/',
@@ -196,6 +210,7 @@ module.exports = (function () {
     extended: true
   }));
 
+  app.use(cookieParser());
   app.use(authFilter);
 
 

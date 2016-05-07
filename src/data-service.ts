@@ -24,7 +24,7 @@ export class DataService {
     this.http = http;
     this.dateFormat = 'MMM Do h:mm a Z';
     this.tempAPI = '/house/api/temp';
-    this.eventsAPI = '/house/api/motion';
+    this.eventsAPI = '/house/api/motion?sinceHours=168';
     this.loginAPI = '/house/api/login';
   }
 
@@ -62,7 +62,10 @@ export class DataService {
 
         // this works around an issue with angular2 pipes in safari
         // https://github.com/angular/angular/issues/3333
-        var latestDateMom = moment(tempJson.latest.date);
+        // i'm changing this because I dont care about the temperature anymore, but I just want the latest date
+        // obviously this could all happen on the client
+        //var latestDateMom = moment(tempJson.latest.date);
+        var latestDateMom = moment();
         var latestDateStr = latestDateMom.format(self.dateFormat);
 
         return {

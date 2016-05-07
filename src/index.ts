@@ -19,7 +19,6 @@ import {MockTemps} from './mocktemps';
   template: `
     <login></login>
     <house-temp></house-temp>
-    <temp-chart></temp-chart>
     <house-video></house-video>
   `
 })

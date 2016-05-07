@@ -13,7 +13,7 @@ import {EventService} from './event-service';
   template: `
     <div class="temp">
       <div *ng-if="temp">
-          <span class="tempValue">{{temp.latest.tempF || 0}} ºF</span> @ {{temp.latest.dateStr}}
+          {{temp.latest.dateStr}}
       </div>
       <div *ng-if="!temp">
       retrieving temp...
