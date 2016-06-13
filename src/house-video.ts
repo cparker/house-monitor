@@ -28,11 +28,6 @@ import {EventService} from './event-service';
       max-width:350px;
       max-height:350px;
     }
-
-    .pic-container {
-      height:98%;
-      overflow-y: scroll;
-    }
   `]
 })
 
