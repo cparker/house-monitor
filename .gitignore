@@ -2,7 +2,7 @@ node_modules/
 build/
 .idea/
 .DS_Store
-new-vids/
+new-vids
 live-vids/
 lastCheck.json
 recordTemp.log

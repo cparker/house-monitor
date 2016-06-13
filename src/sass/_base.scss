@@ -2,16 +2,12 @@
 @import 'colors';
 
 html {
-  height: 95%;
-  width: 95%;
   font-family: "Verdana", sans-serif;
   font-size: 14pt;
   background-color: $mainBackground;
 }
 
 body {
-  // sets the font to 100% of the parent element's size
-  height:92%;
   margin:0;
   padding:0;
 }

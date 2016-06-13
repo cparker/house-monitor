@@ -1,28 +1,25 @@
 @import 'base';
-
 main {
   height: 100%;
   padding: 10px;
   background-color: $mainBackground;
 }
-
 .pic {
-  padding-bottom: 0.8em;
+  padding: 0.6em;
 }
-
 .pic-inner {
-
   img {
+    border: 3px solid gray;
     max-width: 350px;
     max-height: 350px;
   }
 }
-
 .pic-container {
-  height: 100%;
-  overflow: scroll;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  overflow-y: scroll;
 }
-
 input[type="password"] {
   display: block;
   margin: 0;
@@ -34,11 +31,9 @@ input[type="password"] {
   border-radius: none;
   padding: 5px;
 }
-
 input[type="password"]:focus {
   outline: none;
 }
-
 input[type="submit"] {
   border-top: 2px solid lightgray;
   border-left: 2px solid lightgray;
